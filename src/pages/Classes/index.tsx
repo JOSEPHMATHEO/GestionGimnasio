@@ -9,18 +9,38 @@ export function Classes() {
   const [classes, setClasses] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedClass, setSelectedClass] = useState(null);
+  const [trainers, setTrainers] = useState<any[]>([]); // Estado para entrenadores
+  const [error, setError] = useState('');
   const { user: currentUser } = useAuthStore();
 
   useEffect(() => {
     fetchClasses();
+    fetchTrainers(); // Llamar a la función para obtener los entrenadores
   }, []);
 
   const fetchClasses = async () => {
     try {
+      setError('');
+      console.log('Fetching classes...');
       const response = await api.get('/classes');
+      console.log('Classes response:', response.data);
       setClasses(response.data);
     } catch (error) {
-      console.error('Error fetching classes:', error);
+      console.error('Error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      setError('Failed to load classes. Please try again later.');
+    }
+  };
+  
+  const fetchTrainers = async () => {
+    try {
+      const response = await api.get('/users'); // Obtener lista de usuarios
+      setTrainers(response.data.filter((user: any) => user.role === 'trainer')); // Filtrar entrenadores
+    } catch (error) {
+      console.error('Error fetching trainers:', error);
     }
   };
 
@@ -47,15 +67,27 @@ export function Classes() {
 
   const handleFormSubmit = async (classData) => {
     try {
+      console.log('Datos a enviar:', classData);  // Verifica la estructura de classData
+  
       if (selectedClass) {
         await api.put(`/classes/${selectedClass.id}`, classData);
       } else {
         await api.post('/classes', classData);
       }
+  
       fetchClasses();
       handleFormClose();
     } catch (error) {
-      console.error('Error saving class:', error);
+      if (error.response) {
+        console.error('Error en la respuesta del servidor:', error.response);
+        alert(`Error al guardar la clase: ${error.response.data.message || 'Error desconocido'}`);
+      } else if (error.request) {
+        console.error('No se recibió respuesta del servidor:', error.request);
+        alert('No se pudo conectar al servidor.');
+      } else {
+        console.error('Error en la solicitud:', error.message);
+        alert(`Error desconocido: ${error.message}`);
+      }
     }
   };
 
@@ -88,6 +120,7 @@ export function Classes() {
           classItem={selectedClass}
           onSubmit={handleFormSubmit}
           onClose={handleFormClose}
+          trainers={trainers} // Pasar la lista de entrenadores
         />
       )}
     </div>

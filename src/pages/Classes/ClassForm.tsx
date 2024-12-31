@@ -4,12 +4,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X } from 'lucide-react';
 
+// Enum de los días de la semana para el campo de 'schedule'
+const daysOfWeek = [
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+];
+
 const classSchema = z.object({
   name: z.string().min(2, 'Class name must be at least 2 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   trainer: z.string().min(1, 'Trainer is required'),
   schedule: z.object({
-    dayOfWeek: z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
+    dayOfWeek: z.enum(daysOfWeek),
     startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
     endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
   }),
@@ -22,7 +27,7 @@ const classSchema = z.object({
 type ClassFormData = {
   name: string;
   description: string;
-  trainer: string;
+  trainer: string; // Este es el ObjectId del entrenador
   schedule: {
     dayOfWeek: string;
     startTime: string;
@@ -35,13 +40,14 @@ interface ClassFormProps {
   classItem?: ClassFormData | null;
   onSubmit: (data: ClassFormData) => void;
   onClose: () => void;
+  trainers: any[]; // Recibir lista de entrenadores
 }
 
-export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
+export function ClassForm({ classItem, onSubmit, onClose, trainers }: ClassFormProps) {
   const defaultValues = {
     name: classItem?.name || '',
     description: classItem?.description || '',
-    trainer: classItem?.trainer || '',
+    trainer: classItem?.trainer || '', // Esto será el ObjectId del entrenador
     schedule: {
       dayOfWeek: classItem?.schedule?.dayOfWeek || 'Monday',
       startTime: classItem?.schedule?.startTime || '09:00',
@@ -61,13 +67,24 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
 
   const handleFormSubmit = (data: ClassFormData) => {
     const formattedData = {
-      ...data,
+      name: data.name,
+      description: data.description,
+      trainer: data.trainer,
+      schedule: {
+        dayOfWeek: data.schedule.dayOfWeek,
+        startTime: String(data.schedule.startTime), // Asegúrate de enviar cadenas.
+        endTime: String(data.schedule.endTime),
+      },
       capacity: Number(data.capacity),
     };
-  
-    console.log('Data being submitted:', formattedData);
+    
+    console.log("Datos enviados al backend:", formattedData);
     onSubmit(formattedData);
   };
+  
+  
+  
+  
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
@@ -120,50 +137,59 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
             <label htmlFor="trainer" className="block text-sm font-medium text-gray-700">
               Entrenador
             </label>
-            <input
+            <select
               id="trainer"
-              type="text"
               {...register('trainer')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            />
+            >
+              <option value="">Seleccione un entrenador</option>
+              {trainers.map((trainer) => (
+                <option key={trainer._id} value={trainer._id}>
+                  {trainer.firstName} {trainer.lastName}
+                </option>
+              ))}
+            </select>
             {errors.trainer && (
               <p className="mt-1 text-sm text-red-600">{errors.trainer.message}</p>
             )}
           </div>
 
           <div>
-            <label htmlFor="dayOfWeek" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="schedule.dayOfWeek" className="block text-sm font-medium text-gray-700">
               Día de la semana
             </label>
             <select
-              id="dayOfWeek"
+              id="schedule.dayOfWeek"
               {...register('schedule.dayOfWeek')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
-              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
-                <option key={day} value={day}>{day}</option>
+              {daysOfWeek.map((day) => (
+                <option key={day} value={day}>
+                  {day}
+                </option>
               ))}
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
-                Hora de Inicio
+          <div className="flex space-x-4">
+            <div className="w-1/2">
+              <label htmlFor="schedule.startTime" className="block text-sm font-medium text-gray-700">
+                Hora de inicio
               </label>
               <input
-                id="startTime"
+                id="schedule.startTime"
                 type="time"
                 {...register('schedule.startTime')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
             </div>
-            <div>
-              <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
-                Hora de Fin
+
+            <div className="w-1/2">
+              <label htmlFor="schedule.endTime" className="block text-sm font-medium text-gray-700">
+                Hora de fin
               </label>
               <input
-                id="endTime"
+                id="schedule.endTime"
                 type="time"
                 {...register('schedule.endTime')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -178,7 +204,6 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
             <input
               id="capacity"
               type="number"
-              min="1"
               {...register('capacity')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             />
@@ -187,19 +212,19 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
             )}
           </div>
 
-          <div className="flex justify-end space-x-3">
+          <div className="flex justify-end space-x-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
             >
-              {classItem ? 'Update' : 'Create'}
+              Guardar
             </button>
           </div>
         </form>
