@@ -84,7 +84,7 @@ export function ClassList({ classes, onEdit, onDelete, currentUserRole }: ClassL
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => onDelete(classItem.id)}
+                      onClick={() => onDelete(classItem._id)}
                       className="text-red-600 hover:text-red-900"
                     >
                       <Trash2 className="h-4 w-4" />

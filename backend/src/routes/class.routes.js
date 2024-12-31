@@ -10,17 +10,15 @@ import {
 
 const router = express.Router();
 
-router.use(protect);
 
-router
-  .route('/')
+
+router.route('/')
   .get(getClasses)
-  .post(authorize('admin', 'manager', 'trainer'), createClass);
+  .post(protect, authorize('admin', 'manager', 'trainer'), createClass);
 
-router
-  .route('/:id')
-  .get(getClassById)
-  .put(authorize('admin', 'manager', 'trainer'), updateClass)
-  .delete(authorize('admin', 'manager'), deleteClass);
+router.route('/:id')
+  .get(protect, getClassById)
+  .put(protect, authorize('admin', 'manager', 'trainer'), updateClass)
+  .delete(protect, authorize('admin', 'manager'), deleteClass);
 
 export default router;

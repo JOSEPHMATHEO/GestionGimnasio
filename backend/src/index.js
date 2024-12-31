@@ -6,6 +6,8 @@ import connectDB from './config/database.js';
 import { loggerMiddleware } from './middleware/logger.js';
 import { errorHandler } from './middleware/error.js';
 
+import './models/index.js';
+
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';
 import membershipRoutes from './routes/membership.routes.js';

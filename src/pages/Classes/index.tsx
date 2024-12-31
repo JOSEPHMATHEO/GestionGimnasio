@@ -45,8 +45,13 @@ export function Classes() {
   };
 
   const handleEdit = (classItem) => {
-    setSelectedClass(classItem);
-    setIsFormOpen(true);
+    // Verificar que classItem tenga un _id válido antes de actualizar el estado
+    if (classItem && classItem._id) {
+      setSelectedClass(classItem);
+      setIsFormOpen(true);
+    } else {
+      alert('Class ID is missing or undefined');
+    }
   };
 
   const handleDelete = async (classId) => {
@@ -69,9 +74,11 @@ export function Classes() {
     try {
       console.log('Datos a enviar:', classData);  // Verifica la estructura de classData
   
-      if (selectedClass) {
-        await api.put(`/classes/${selectedClass.id}`, classData);
+      // Si estamos actualizando una clase, enviamos el id
+      if (selectedClass && selectedClass._id) {
+        await api.put(`/classes/${selectedClass._id}`, classData);
       } else {
+        // Si estamos creando una nueva clase, no enviamos el id
         await api.post('/classes', classData);
       }
   

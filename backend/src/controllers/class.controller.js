@@ -1,26 +1,43 @@
 import { Class } from '../models/class.model.js';
 import { User } from '../models/user.model.js';
+import asyncHandler from 'express-async-handler';
 
-export const getClasses = async (req, res) => {
+export const getClasses = asyncHandler(async (req, res) => {
   try {
-    const classes = await Class.find().populate('trainer', 'firstName lastName');
+    const classes = await Class.find()
+      .populate('trainer', 'firstName lastName')
+      .lean();
+    
     res.json(classes);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching classes' });
+    console.error('Error in getClasses:', error);
+    res.status(500).json({ 
+      message: 'Error fetching classes',
+      error: error.message 
+    });
   }
-};
+});
 
-export const getClassById = async (req, res) => {
+export const getClassById = asyncHandler(async (req, res) => {
   try {
-    const classItem = await Class.findById(req.params.id).populate('trainer', 'firstName lastName');
+    const classItem = await Class.findById(req.params.id)
+      .populate('trainer', 'firstName lastName')
+      .lean();
+      
     if (!classItem) {
-      return res.status(404).json({ message: 'Class not found' });
+      res.status(404);
+      throw new Error('Class not found');
     }
+    
     res.json(classItem);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching class' });
+    console.error('Error in getClassById:', error);
+    res.status(error.status || 500).json({
+      message: error.message || 'Error fetching class',
+      error: error.message
+    });
   }
-};
+});
 
 export const createClass = async (req, res) => {
   try {
@@ -78,16 +95,22 @@ export const updateClass = async (req, res) => {
   }
 };
 
-export const deleteClass = async (req, res) => {
+export const deleteClass = asyncHandler(async (req, res) => {
   try {
     const classItem = await Class.findById(req.params.id);
+    
     if (!classItem) {
-      return res.status(404).json({ message: 'Class not found' });
+      res.status(404);
+      throw new Error('Class not found');
     }
 
     await classItem.deleteOne();
     res.json({ message: 'Class deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting class' });
+    console.error('Error in deleteClass:', error);
+    res.status(error.status || 500).json({
+      message: error.message || 'Error deleting class',
+      error: error.message
+    });
   }
-};
+});
