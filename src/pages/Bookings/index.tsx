@@ -47,17 +47,23 @@ export function Bookings() {
 
   const handleFormSubmit = async (bookingData) => {
     try {
+      console.log('Datos enviados al backend:', bookingData);
+  
       if (selectedBooking) {
-        await api.put(`/bookings/${selectedBooking.id}`, bookingData);
+        await api.put(`/bookings/${selectedBooking._id}`, bookingData);
       } else {
-        await api.post('/bookings', bookingData);
+        const response = await api.post('/bookings', bookingData);
+        console.log('Respuesta del servidor:', response.data);
       }
+  
       fetchBookings();
       handleFormClose();
     } catch (error) {
-      console.error('Error saving booking:', error);
+      console.error('Error al guardar la reserva:', error.response?.data || error.message);
     }
   };
+  
+  
 
   return (
     <div className="space-y-6">

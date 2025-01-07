@@ -95,7 +95,7 @@ export function BookingForm({ booking, onSubmit, onClose }: BookingFormProps) {
             >
               <option value="">Select a class</option>
               {classes.map((classOption) => (
-                <option key={classOption.id} value={classOption.id}>
+                <option key={classOption._id} value={classOption._id}>
                   {classOption.name} - {classOption.schedule.dayOfWeek} {classOption.schedule.startTime}
                 </option>
               ))}

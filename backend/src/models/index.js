@@ -13,6 +13,11 @@ const models = {
   Membership
 };
 
+mongoose.model('User', User.schema);
+mongoose.model('Class', Class.schema);
+mongoose.model('Booking', Booking.schema);
+mongoose.model('Membership', Membership.schema);
+
 // Register any models that haven't been registered yet
 Object.entries(models).forEach(([modelName, model]) => {
   if (!mongoose.models[modelName]) {

@@ -30,7 +30,7 @@ export function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
-      <nav className="bg-white shadow-sm">
+      <nav className="bg-[#333333] text-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
@@ -43,7 +43,7 @@ export function DashboardLayout() {
                     <Link
                       key={item.path}
                       to={item.path}
-                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-gray-900"
+                      className="inline-flex items-center px-1 pt-1 text-sm font-medium text-white"
                     >
                       <item.icon className="h-4 w-4 mr-2" />
                       {item.label}
@@ -53,7 +53,7 @@ export function DashboardLayout() {
               </div>
             </div>
             <div className="flex items-center">
-              <span className="text-sm text-gray-700 mr-4">
+              <span className="text-sm text-white mr-4">
                 {user?.firstName} {user?.lastName}
               </span>
               <button
