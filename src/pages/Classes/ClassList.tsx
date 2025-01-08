@@ -28,74 +28,81 @@ export function ClassList({ classes, onEdit, onDelete, currentUserRole }: ClassL
   const canManageClass = ['admin', 'manager', 'trainer'].includes(currentUserRole);
 
   return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Class Name
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Trainer
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Schedule
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Capacity
-            </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {classes.map((classItem) => (
-            <tr key={classItem.id}>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm font-medium text-gray-900">
-                  {classItem.name}
-                </div>
-                <div className="text-sm text-gray-500">{classItem.description}</div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">
-                  {classItem.trainer.firstName} {classItem.trainer.lastName}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">
-                  {classItem.schedule.dayOfWeek}
-                </div>
-                <div className="text-sm text-gray-500">
-                  {classItem.schedule.startTime} - {classItem.schedule.endTime}
-                </div>
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {classItem.capacity}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                {canManageClass && (
-                  <div className="flex justify-end space-x-2">
-                    <button
-                      onClick={() => onEdit(classItem)}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => onDelete(classItem._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                )}
-              </td>
+    <div className="bg-white shadow-lg rounded-xl overflow-hidden ring-1 ring-gray-200 mx-24 my-26">
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200 table-auto">
+
+          <thead className="bg-[#333333] text-white">
+            <tr>
+              <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
+                Nombre de la Clase
+              </th>
+              <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
+                Entrenador
+              </th>
+              <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
+                Horario
+              </th>
+              <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
+                Capacidad
+              </th>
+              <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
+                Acciones
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          {/* Table Body */}
+          <tbody className="bg-white divide-y divide-gray-200">
+            {classes.map((classItem) => (
+              <tr
+                key={classItem.id}
+                className="hover:bg-gray-100 transition duration-300 ease-in-out"
+              >
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-base font-medium text-gray-900">
+                    {classItem.name}
+                  </div>
+                  <div className="text-sm text-gray-500">{classItem.description}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-base text-gray-900">
+                    {classItem.trainer.firstName} {classItem.trainer.lastName}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-base text-gray-900">
+                    {classItem.schedule.dayOfWeek}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {classItem.schedule.startTime} - {classItem.schedule.endTime}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900">
+                  {classItem.capacity}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right">
+                  {canManageClass && (
+                    <div className="flex justify-normal space-x-4">
+                      <button
+                        onClick={() => onEdit(classItem)}
+                        className="text-bg-[#333333] hover:text-indigo-900 transition duration-200 ease-in-out"
+                      >
+                        <Edit2 className="h-5 w-5" />
+                      </button>
+                      <button
+                        onClick={() => onDelete(classItem._id)}
+                        className="text-red-600 hover:text-red-800 transition duration-150"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
-  );
+  );    
 }

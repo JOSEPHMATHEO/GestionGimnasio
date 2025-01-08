@@ -63,18 +63,16 @@ export function Bookings() {
     }
   };
   
-  
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-900">Class Bookings</h1>
+        <h1 className="text-4xl font-extrabold text-gray-900 mx-24 my-8">Reserva De Clases</h1>
         <button
           onClick={() => setIsFormOpen(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600 mx-24"
         >
           <Calendar className="h-4 w-4 mr-2" />
-          Book Class
+          Reservar Clase
         </button>
       </div>
 

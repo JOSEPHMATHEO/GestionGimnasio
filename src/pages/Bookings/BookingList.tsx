@@ -41,24 +41,24 @@ export function BookingList({
     return booking.client.id === currentUserId;
   };
   return (
-    <div className="bg-white shadow-lg rounded-xl overflow-hidden ring-1 ring-gray-200 mx-12 my-14">
+    <div className="bg-white shadow-lg rounded-xl overflow-hidden ring-1 ring-gray-200 mx-24 my-26">
       <table className="min-w-full divide-y divide-gray-200 table-auto">
-        <thead className="bg-indigo-600 text-white">
+        <thead className="bg-[#333333] text-white">
           <tr>
             <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
-              Class
+              Clase
             </th>
             <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
-              Client
+              Cliente
             </th>
             <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
-              Date & Time
+              Fecha & Hora
             </th>
-            <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
-              Status
+            <th className="px-8 py-3 text-xs font-semibold uppercase tracking-wider text-left">
+              Estado
             </th>
             <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-right">
-              Actions
+              Acciones
             </th>
           </tr>
         </thead>
@@ -93,7 +93,7 @@ export function BookingList({
                   <div className="flex justify-end space-x-4">
                     <button
                       onClick={() => onEdit(booking)}
-                      className="text-indigo-600 hover:text-indigo-900 transition duration-200 ease-in-out"
+                      className="text-bg-[#333333] hover:text-indigo-900 transition duration-200 ease-in-out"
                     >
                       <Edit2 className="h-5 w-5" />
                     </button>
