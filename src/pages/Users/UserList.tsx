@@ -26,20 +26,20 @@ export function UserList({ users, onEdit, onDelete, currentUserRole }: UserListP
   };
 
   return (
-    <div className="bg-white shadow-sm rounded-lg overflow-hidden">
+    <div className="bg-white shadow-lg rounded-xl overflow-hidden ring-1 ring-gray-200 mx-24 my-26">
       <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
+        <thead className="bg-[#333333] text-white">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
               Nombre
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
               Email
             </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
               Rol
             </th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+            <th className="px-6 py-3 text-xs font-semibold uppercase tracking-wider text-left">
               Acciones
             </th>
           </tr>
@@ -62,10 +62,10 @@ export function UserList({ users, onEdit, onDelete, currentUserRole }: UserListP
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 {canManageUser(user.role) && (
-                  <div className="flex justify-end space-x-2">
+                  <div className="flex justify-normal space-x-2">
                     <button
                       onClick={() => onEdit(user)}
-                      className="text-indigo-600 hover:text-indigo-900"
+                      className="text-bg-[#333333] hover:text-indigo-900 transition duration-200 ease-in-out"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>

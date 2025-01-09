@@ -35,7 +35,7 @@ export function DashboardLayout() {
           <div className="flex justify-between h-16">
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
-                <Dumbbell className="h-8 w-8 text-indigo-600" />
+                <Dumbbell className="h-8 w-8 text-white" />
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 {menuItems.map((item) => 
@@ -58,7 +58,7 @@ export function DashboardLayout() {
               </span>
               <button
                 onClick={handleLogout}
-                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-zinc-600 hover:bg-[#353434] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Cerrar Sesión

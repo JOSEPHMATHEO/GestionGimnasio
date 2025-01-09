@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Dumbbell } from 'lucide-react';
 import api from '../lib/axios';
 
+
 // Esquema de validación con Zod
 const registerSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -33,24 +34,25 @@ export function Register() {
       // Mostrar un mensaje de error amigable si está disponible
       alert(
         error.response?.data?.message ||
-        'Something went wrong during registration. Please try again.'
+        'Algo salio mal al registrarse. Por favor intente de nuevo.'
       );
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <Dumbbell className="h-12 w-12 text-indigo-600" />
+          <Dumbbell className="h-12 w-12 text-white" />
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Create your account
+          Crea una cuenta
         </h2>
         <p className="mt-2 text-center text-sm text-gray-600">
-          Or{' '}
+          O{' '}
           <Link to="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-            sign in to your account
+            Ingresa en tu cuenta
           </Link>
         </p>
       </div>
@@ -60,7 +62,7 @@ export function Register() {
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-                First Name
+                Nombre
               </label>
               <div className="mt-1">
                 <input
@@ -75,7 +77,7 @@ export function Register() {
 
             <div>
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-                Last Name
+                Apellido
               </label>
               <div className="mt-1">
                 <input
@@ -90,7 +92,7 @@ export function Register() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
+                Correo electrónico
               </label>
               <div className="mt-1">
                 <input
@@ -102,11 +104,11 @@ export function Register() {
                   <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
                 )}
               </div>
-            </div>
+            </div> 
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
+                Contraseña
               </label>
               <div className="mt-1">
                 <input
@@ -125,7 +127,7 @@ export function Register() {
                 type="submit"
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-                Register
+                Registrar
               </button>
             </div>
           </form>
