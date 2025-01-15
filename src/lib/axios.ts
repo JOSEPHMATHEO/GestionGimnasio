@@ -6,6 +6,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 5000,
 });
 
 // Request interceptor
@@ -26,12 +27,25 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Log detailed error information
-    console.error('API Error:', {
+    if (error.code === 'ECONNABORTED') {
+      console.error('Request timeout');
+      return Promise.reject(new Error('Request timeout. Please try again.'));
+    }
+
+    if (!error.response) {
+      console.error('Network error - server may be down');
+      return Promise.reject(new Error('Unable to connect to server. Please try again later.'));
+    }
+
+    // Log only serializable error information
+    const errorInfo = {
       status: error.response?.status,
-      data: error.response?.data,
-      config: error.config
-    });
+      message: error.response?.data?.message || error.message,
+      url: error.config?.url,
+      method: error.config?.method,
+    };
+    
+    console.error('API Error:', errorInfo);
     return Promise.reject(error);
   }
 );

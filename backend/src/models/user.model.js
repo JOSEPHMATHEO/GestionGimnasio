@@ -25,10 +25,18 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'manager', 'trainer', 'client'],
     default: 'client',
   },
+  membership: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Membership',
+    required: function() {
+      return this.role === 'client';
+    },
+  },
   createdAt: {
     type: Date,
     default: Date.now,
   },
+
 });
 
 userSchema.pre('save', async function (next) {

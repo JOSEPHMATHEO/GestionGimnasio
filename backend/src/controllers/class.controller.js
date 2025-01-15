@@ -5,7 +5,11 @@ import asyncHandler from 'express-async-handler';
 export const getClasses = asyncHandler(async (req, res) => {
   try {
     const classes = await Class.find()
-      .populate('trainer', 'firstName lastName')
+      .populate({
+        path: 'trainer',
+        model: User,
+        select: 'firstName lastName'
+      })
       .lean();
     
     res.json(classes);
@@ -21,7 +25,11 @@ export const getClasses = asyncHandler(async (req, res) => {
 export const getClassById = asyncHandler(async (req, res) => {
   try {
     const classItem = await Class.findById(req.params.id)
-      .populate('trainer', 'firstName lastName')
+      .populate({
+        path: 'trainer',
+        model: User,
+        select: 'firstName lastName'
+      })
       .lean();
       
     if (!classItem) {
@@ -39,25 +47,10 @@ export const getClassById = asyncHandler(async (req, res) => {
   }
 });
 
-export const createClass = async (req, res) => {
+export const createClass = asyncHandler(async (req, res) => {
   try {
     const { name, description, trainer, schedule, capacity } = req.body;
-
-    // Validar que todos los campos requeridos estén presentes
-    if (!name || !description || !trainer || !schedule || !capacity) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-
-    // Validar que el `trainer` sea un usuario con el rol `trainer`
-    const trainerUser = await User.findById(trainer);
-    if (!trainerUser) {
-      return res.status(404).json({ message: 'Trainer not found' });
-    }
-    if (trainerUser.role !== 'trainer') {
-      return res.status(400).json({ message: 'User is not a trainer' });
-    }
-
-    // Crear la clase
+    
     const classItem = await Class.create({
       name,
       description,
@@ -65,21 +58,25 @@ export const createClass = async (req, res) => {
       schedule,
       capacity,
     });
-
+    
     res.status(201).json(classItem);
   } catch (error) {
-    console.error('Error creating class:', error);
-    res.status(500).json({ message: 'Error creating class', error: error.message });
+    console.error('Error in createClass:', error);
+    res.status(500).json({
+      message: 'Error creating class',
+      error: error.message
+    });
   }
-};
+});
 
-export const updateClass = async (req, res) => {
+export const updateClass = asyncHandler(async (req, res) => {
   try {
     const { name, description, trainer, schedule, capacity } = req.body;
     const classItem = await Class.findById(req.params.id);
 
     if (!classItem) {
-      return res.status(404).json({ message: 'Class not found' });
+      res.status(404);
+      throw new Error('Class not found');
     }
 
     classItem.name = name || classItem.name;
@@ -91,9 +88,13 @@ export const updateClass = async (req, res) => {
     const updatedClass = await classItem.save();
     res.json(updatedClass);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating class' });
+    console.error('Error in updateClass:', error);
+    res.status(error.status || 500).json({
+      message: error.message || 'Error updating class',
+      error: error.message
+    });
   }
-};
+});
 
 export const deleteClass = asyncHandler(async (req, res) => {
   try {

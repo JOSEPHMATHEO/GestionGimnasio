@@ -2,9 +2,10 @@ import { Membership } from '../models/membership.model.js';
 
 export const getMemberships = async (req, res) => {
   try {
-    const memberships = await Membership.find();
+    const memberships = await Membership.find().select('name description cost');
     res.json(memberships);
   } catch (error) {
+    console.error('Error fetching memberships:', error);
     res.status(500).json({ message: 'Error fetching memberships' });
   }
 };
