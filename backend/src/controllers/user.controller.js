@@ -1,27 +1,55 @@
-import { User } from '../models/user.model.js';
-
-export const getUsers = async (req, res) => {
+export const getUsers = asyncHandler(async (req, res) => {
   try {
-    const users = await User.find().select('-password');
-    res.json(users);
+    const users = await User.find()
+      .select('-password')
+      .lean()
+      .exec();
+
+    // Transform the data to match the frontend interface
+    const transformedUsers = users.map(user => ({
+      id: user._id.toString(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role
+    }));
+
+    res.json(transformedUsers);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching users' });
+    console.error('Error fetching users:', error);
+    res.status(500).json({ 
+      message: 'Error fetching users',
+      error: error.message 
+    });
   }
-};
+});
 
-export const getUserById = async (req, res) => {
+export const getUserById = asyncHandler(async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(req.params.id)
+      .select('-password')
+      .lean()
+      .exec();
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user);
+
+    const transformedUser = {
+      id: user._id.toString(),
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role
+    };
+
+    res.json(transformedUser);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching user' });
   }
-};
+});
 
-export const createUser = async (req, res) => {
+export const createUser = asyncHandler(async (req, res) => {
   try {
     const { firstName, lastName, email, password, role } = req.body;
     
@@ -35,22 +63,28 @@ export const createUser = async (req, res) => {
       lastName,
       email,
       password,
-      role,
+      role: role || 'client',
     });
 
-    res.status(201).json({
-      id: user._id,
+    const transformedUser = {
+      id: user._id.toString(),
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      role: user.role,
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error creating user' });
-  }
-};
+      role: user.role
+    };
 
-export const updateUser = async (req, res) => {
+    res.status(201).json(transformedUser);
+  } catch (error) {
+    console.error('Error creating user:', error);
+    res.status(500).json({ 
+      message: 'Error creating user',
+      error: error.message 
+    });
+  }
+});
+
+export const updateUser = asyncHandler(async (req, res) => {
   try {
     const { firstName, lastName, email, role } = req.body;
     const user = await User.findById(req.params.id);
@@ -65,19 +99,26 @@ export const updateUser = async (req, res) => {
     user.role = role || user.role;
 
     const updatedUser = await user.save();
-    res.json({
-      id: updatedUser._id,
+    
+    const transformedUser = {
+      id: updatedUser._id.toString(),
       firstName: updatedUser.firstName,
       lastName: updatedUser.lastName,
       email: updatedUser.email,
-      role: updatedUser.role,
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Error updating user' });
-  }
-};
+      role: updatedUser.role
+    };
 
-export const deleteUser = async (req, res) => {
+    res.json(transformedUser);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ 
+      message: 'Error updating user',
+      error: error.message 
+    });
+  }
+});
+
+export const deleteUser = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -87,6 +128,10 @@ export const deleteUser = async (req, res) => {
     await user.deleteOne();
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting user' });
+    console.error('Error deleting user:', error);
+    res.status(500).json({ 
+      message: 'Error deleting user',
+      error: error.message 
+    });
   }
-};
+});

@@ -9,6 +9,9 @@ import { errorHandler } from './middleware/error.js';
 // Load environment variables first
 dotenv.config();
 
+// Import models to ensure they are registered
+import './models/index.js';
+
 // Import routes
 import authRoutes from './routes/auth.routes.js';
 import userRoutes from './routes/user.routes.js';

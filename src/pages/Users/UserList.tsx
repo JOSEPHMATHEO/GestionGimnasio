@@ -25,6 +25,14 @@ export function UserList({ users, onEdit, onDelete, currentUserRole }: UserListP
     return false;
   };
 
+  if (users.length === 0) {
+    return (
+      <div className="bg-white shadow-sm rounded-lg p-6 text-center">
+        <p className="text-gray-500">No users found matching your criteria.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white shadow-lg rounded-xl overflow-hidden ring-1 ring-gray-200 mx-24 my-26">
       <table className="min-w-full divide-y divide-gray-200">
@@ -56,10 +64,15 @@ export function UserList({ users, onEdit, onDelete, currentUserRole }: UserListP
                 <div className="text-sm text-gray-500">{user.email}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                  {user.role}
-                </span>
-              </td>
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
+                    user.role === 'manager' ? 'bg-blue-100 text-blue-800' :
+                    user.role === 'trainer' ? 'bg-green-100 text-green-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                  </span>
+                </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 {canManageUser(user.role) && (
                   <div className="flex justify-normal space-x-2">
