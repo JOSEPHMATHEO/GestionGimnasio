@@ -158,15 +158,20 @@ export function RegisterForm() {
         )}
       </div>
 
-      <div className="mt-4 space-y-4">
-        {memberships.map((membership) => (
-          <div key={membership._id} className="p-4 border rounded-lg">
-            <h3 className="font-medium">{membership.name}</h3>
-            <p className="text-sm text-gray-600">{membership.description}</p>
-            <p className="mt-2 text-lg font-bold">${membership.cost}/month</p>
-          </div>
-        ))}
-      </div>
+      <div className="mt-4 overflow-x-auto">
+        <div className="flex space-x-4">
+          {memberships.map((membership) => (
+            <div 
+              key={membership.id} 
+              className="p-3 border rounded-md min-w-[250px] max-w-xs flex-shrink-0"
+              >
+              <h4 className="font-medium">{membership.name}</h4>
+              <p className="text-sm text-gray-600">{membership.description}</p>
+              <p className="mt-1 font-bold">${membership.cost}/month</p>
+            </div>
+          ))}
+        </div>
+       </div>
 
       <button
         type="submit"
