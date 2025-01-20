@@ -10,15 +10,15 @@ import {
 
 const router = express.Router();
 
+// All routes require authentication
 router.use(protect);
 
-router
-  .route('/')
-  .get(authorize('admin', 'manager', 'trainer'), getBookings)
+// Routes with role-based authorization
+router.route('/')
+  .get(getBookings) // All authenticated users can view their relevant bookings
   .post(createBooking); // All authenticated users can create bookings
 
-router
-  .route('/:id')
+router.route('/:id')
   .get(getBookingById)
   .put(updateBooking)
   .delete(deleteBooking);

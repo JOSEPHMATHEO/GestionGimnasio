@@ -1,3 +1,6 @@
+import { User } from '../models/user.model.js';
+import asyncHandler from 'express-async-handler';
+
 export const getUsers = asyncHandler(async (req, res) => {
   try {
     const users = await User.find()
