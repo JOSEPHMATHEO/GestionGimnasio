@@ -18,6 +18,7 @@ import userRoutes from './routes/user.routes.js';
 import membershipRoutes from './routes/membership.routes.js';
 import classRoutes from './routes/class.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
+import statsRoutes from './routes/stats.routes.js';
 
 const startServer = async () => {
   try {
@@ -49,6 +50,7 @@ const startServer = async () => {
     app.use('/api/memberships', membershipRoutes);
     app.use('/api/classes', classRoutes);
     app.use('/api/bookings', bookingRoutes);
+    app.use('/api/stats', statsRoutes);
 
     // Error Handler
     app.use(errorHandler);
