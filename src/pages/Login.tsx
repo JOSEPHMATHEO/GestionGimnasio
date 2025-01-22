@@ -25,9 +25,9 @@ export function Login() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-    
       <div className="mt-1 sm:mx-auto sm:w-full sm:max-w-md rounded-md">
-        <div className="bg-neutral-800 py-8 px-4 shadow sm:rounded-[55px] sm:px-10 ">
+        <div className="bg-neutral-800 py-8 px-4 shadow sm:rounded-[55px] sm:px-10">
+
           <div className="flex justify-center">
             <img src="src\img\logo.png" alt="logo" className="h-45 w-80"/>
           </div>
@@ -40,6 +40,7 @@ export function Login() {
               Crear una cuenta
             </Link>
           </p>
+
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div className="mt-6">
               <label htmlFor="email" className="block text-sm font-medium text-gray-50">
@@ -56,6 +57,7 @@ export function Login() {
                   <p className="mt-1 text-sm text-red-600">Escriba el correo</p>
                 )}
               </div>
+              
             </div>
 
             <div>
@@ -78,12 +80,13 @@ export function Login() {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-600 bg-gray-200 focus:outline-none hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-900 bg-gray-200 focus:outline-none hover:bg-zinc-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
                 Ingresar
               </button>
             </div>
           </form>
+
         </div>
       </div>
     </div>

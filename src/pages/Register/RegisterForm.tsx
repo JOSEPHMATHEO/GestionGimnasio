@@ -77,108 +77,125 @@ export function RegisterForm() {
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-      {error && (
-        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
-          {error}
-        </div>
-      )}
-
-      <div>
-        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-          Nombre
-        </label>
-        <input
-          {...register('firstName')}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        />
-        {errors.firstName && (
-          <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-          Apellido
-        </label>
-        <input
-          {...register('lastName')}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        />
-        {errors.lastName && (
-          <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Correo electrónico
-        </label>
-        <input
-          type="email"
-          {...register('email')}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Contraseña
-        </label>
-        <input
-          type="password"
-          {...register('password')}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        />
-        {errors.password && (
-          <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="membershipId" className="block text-sm font-medium text-gray-700">
-          Seleccione un Plan de Membresia
-        </label>
-        <select
-          {...register('membershipId')}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-        >
-          <option value="">Elija una membresia</option>
-          {memberships.map((membership) => (
-            <option key={membership._id} value={membership._id}>
-              {membership.name} - ${membership.cost}/mes
-            </option>
-          ))}
-        </select>
-        {errors.membershipId && (
-          <p className="mt-1 text-sm text-red-600">{errors.membershipId.message}</p>
-        )}
-      </div>
-
-      <div className="mt-4 overflow-x-auto">
-        <div className="flex space-x-4">
-          {memberships.map((membership) => (
-            <div 
-              key={membership.id} 
-              className="p-3 border rounded-md min-w-[250px] max-w-xs flex-shrink-0"
-              >
-              <h4 className="font-medium">{membership.name}</h4>
-              <p className="text-sm text-gray-600">{membership.description}</p>
-              <p className="mt-1 font-bold">${membership.cost}/mes</p>
+    <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="mt-1 sm:mx-auto sm:w-full sm:max-w-lg rounded-md">
+        <div className="bg-neutral-800 py-8 px-4 shadow sm:rounded-[55px] sm:px-10">
+  
+          <div className="flex justify-center">
+            <img src="src\\img\\logo.png" alt="logo" className="h-18 w-15"/>
+          </div>
+          <h2 className="mt-0 text-center text-1xl font-extrabold text-gray-50">
+            Te damos la Bienvenida
+          </h2>
+          <p className="mt-1 text-center text-sm text-gray-50">
+            ¿No tienes una cuenta?{' '}
+            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Crear una cuenta
+            </Link>
+          </p>
+  
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <div className="mt-6">
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-50">
+                Nombre
+              </label>
+              <input
+                {...register('firstName')}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.firstName && (
+                <p className="mt-1 text-sm text-red-600">{errors.firstName.message}</p>
+              )}
             </div>
-          ))}
+  
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-50">
+                Apellido
+              </label>
+              <input
+                {...register('lastName')}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.lastName && (
+                <p className="mt-1 text-sm text-red-600">{errors.lastName.message}</p>
+              )}
+            </div>
+  
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-50">
+                Correo electrónico
+              </label>
+              <input
+                type="email"
+                {...register('email')}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              )}
+            </div>
+  
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-50">
+                Contraseña
+              </label>
+              <input
+                type="password"
+                {...register('password')}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              {errors.password && (
+                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+              )}
+            </div>
+  
+            <div>
+              <label htmlFor="membershipId" className="block text-sm font-medium text-gray-50">
+                Seleccione un Plan de Membresia
+              </label>
+              <select
+                {...register('membershipId')}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              >
+                <option value="">Elija una membresia</option>
+                {memberships.map((membership) => (
+                  <option key={membership._id} value={membership._id}>
+                    {membership.name} - ${membership.cost}/mes
+                  </option>
+                ))}
+              </select>
+              {errors.membershipId && (
+                <p className="mt-1 text-sm text-red-600">{errors.membershipId.message}</p>
+              )}
+            </div>
+  
+            <div className="mt-6 overflow-x-auto">
+              <div className="flex space-x-4">
+                {memberships.map((membership) => (
+                  <div
+                    key={membership.id} 
+                    className="p-2 border border-gray-300 bg-indigo-100 rounded-md min-w-[230px] max-w-xs flex-shrink-2 text-gray-900"
+                  >
+                    <h4 className="font-medium text-lg">{membership.name}</h4>
+                    <p className="text-sm text-gray-600">{membership.description}</p>
+                    <p className="mt-1 font-bold">${membership.cost}/mes</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+  
+            <div className="flex justify-center">
+              <button
+                type="submit"
+                className="flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-900 bg-gray-200 focus:outline-none hover:bg-zinc-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Registrar
+              </button>
+            </div>
+          </form>
         </div>
-       </div>
-
-      <button
-        type="submit"
-        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600 mx-24"
-      >
-        Registrar
-      </button>
-    </form>
+      </div>
+    </div>
   );
+  
 }

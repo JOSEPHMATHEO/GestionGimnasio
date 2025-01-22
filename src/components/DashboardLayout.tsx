@@ -44,7 +44,7 @@ export function DashboardLayout() {
         {/* Logo */}
         <div className="h-16 flex items-center px-6 bg-zinc-900">
           <Dumbbell className="h-8 w-8 text-white" />
-          <span className="ml-2 text-lg font-semibold text-white">Gym Manager</span>
+          <span className="ml-2 text-lg font-semibold text-white">Gym Active</span>
         </div>
 
         {/* User info */}
