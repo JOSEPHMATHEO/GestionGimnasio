@@ -149,44 +149,44 @@ export function Dashboard() {
 
       {/* Trainer Stats */}
       {user.role === 'trainer' && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
           <StatCard
             title="Active Classes"
             value={stats.activeClasses || 0}
-            icon={<Dumbbell className="h-6 w-6" />}
+            icon={<Dumbbell className="h-10 w-10 text-indigo-600" />}
           />
           <StatCard
             title="Upcoming Bookings"
             value={stats.upcomingBookings || 0}
-            icon={<Calendar className="h-6 w-6" />}
+            icon={<Calendar className="h-10 w-10 text-green-600" />}
           />
           <StatCard
             title="Completed Sessions"
             value={stats.completedBookings || 0}
-            icon={<Trophy className="h-6 w-6" />}
+            icon={<Trophy className="h-10 w-10 text-yellow-600" />}
           />
-        </div>
+      </div>
       )}
 
       {/* Client Stats */}
       {user.role === 'client' && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
             <StatCard
               title="Membership Status"
               value={stats.membershipStatus?.name || 'No active membership'}
-              icon={<CreditCard className="h-6 w-6" />}
+              icon={<CreditCard className="h-12 w-12 text-indigo-600" />}
               description={`Valid until: ${stats.membershipStatus?.validUntil || 'N/A'}`}
             />
             <StatCard
               title="Upcoming Classes"
               value={stats.upcomingBookings || 0}
-              icon={<Calendar className="h-6 w-6" />}
+              icon={<Calendar className="h-12 w-12 text-green-500" />}
             />
             <StatCard
               title="Classes Attended"
               value={stats.completedBookings || 0}
-              icon={<Activity className="h-6 w-6" />}
+              icon={<Activity className="h-12 w-12 text-yellow-500" />}
             />
           </div>
 

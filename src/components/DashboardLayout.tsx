@@ -51,7 +51,7 @@ export function DashboardLayout() {
         <div className="px-6 py-4 bg-gradient-to-r  bg-zinc-900  bg-zinc-900">
           <div className="flex items-center">
             <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center">
-              <span className="text-indigo-600 font-semibold text-lg">
+              <span className="text-bg-gray-900 font-semibold text-lg">
                 {user?.firstName?.[0]}{user?.lastName?.[0]}
               </span>
             </div>
@@ -94,7 +94,7 @@ export function DashboardLayout() {
         <div className="absolute bottom-0 w-64 p-4 border-t bg-zinc-900">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center px-4 py-2 text-sm text-white hover:bg-gray-50 rounded-lg transition-colors duration-200"
+            className="w-full flex items-center px-4 py-2 text-sm text-white hover:bg-gray-600 rounded-lg transition-colors duration-200"
           >
             <LogOut className="h-5 w-5 mr-3" />
             Cerrar Sesión
@@ -134,7 +134,7 @@ export function DashboardLayout() {
             {/* User profile */}
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                <span className="text-indigo-600 font-semibold">
+                <span className="text-gray-900 font-semibold">
                   {user?.firstName?.[0]}{user?.lastName?.[0]}
                 </span>
               </div>
