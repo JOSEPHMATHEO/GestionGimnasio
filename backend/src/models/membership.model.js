@@ -19,4 +19,8 @@ const membershipSchema = new mongoose.Schema({
   },
 });
 
-export const Membership = mongoose.model('membership', membershipSchema);
+// Create and export the model
+export const Membership = mongoose.model('Membership', membershipSchema);
+
+// Export the schema separately if needed
+export { membershipSchema };

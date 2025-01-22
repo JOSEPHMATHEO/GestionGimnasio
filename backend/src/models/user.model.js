@@ -4,21 +4,21 @@ import bcrypt from 'bcryptjs';
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    required: true,
+    required: [true, 'First name is required'],
   },
   lastName: {
     type: String,
-    required: true,
+    required: [true, 'Last name is required'],
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Email is required'],
     unique: true,
     lowercase: true,
   },
   password: {
     type: String,
-    required: true,
+    required: [true, 'Password is required'],
   },
   role: {
     type: String,
@@ -28,24 +28,36 @@ const userSchema = new mongoose.Schema({
   membership: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Membership',
-    required: function() {
-      return this.role === 'client';
-    },
+    validate: {
+      validator: function(v) {
+        // Solo requerir membresía si el rol es cliente
+        return this.role !== 'client' || (this.role === 'client' && v);
+      },
+      message: 'Membership is required for clients'
+    }
   },
   createdAt: {
     type: Date,
     default: Date.now,
-  },
-
+  }
 });
 
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 10);
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+  
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
 });
 
-userSchema.methods.comparePassword = async function (candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
-};
+// Create and export the model
+const User = mongoose.model('User', userSchema);
 
-export const User = mongoose.model('user', userSchema);
+export { User, userSchema };

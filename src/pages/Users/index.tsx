@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserList } from './UserList';
 import { UserForm } from './UserForm';
 import { UserFilters } from './UserFilters';
 import { useAuthStore } from '../../stores/auth';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, ChevronLeft, ChevronRight } from 'lucide-react';
 import api from '../../lib/axios';
 
 interface User {
@@ -12,6 +12,22 @@ interface User {
   lastName: string;
   email: string;
   role: string;
+  membership?: {
+    name: string;
+    cost: number;
+  };
+}
+
+interface PaginationData {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+}
+
+interface ApiResponse {
+  users: User[];
+  pagination: PaginationData;
 }
 
 export function Users() {
@@ -19,31 +35,52 @@ export function Users() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { user: currentUser } = useAuthStore();
-  
-  // Filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<PaginationData>({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10
+  });
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = async (page = 1) => {
     try {
       setIsLoading(true);
       setError(null);
-      const response = await api.get('/users');
-      console.log('Fetched users:', response.data); // Debug log
-      setUsers(response.data);
-    } catch (error) {
+      console.log('Fetching users for page:', page);
+      
+      const response = await api.get<ApiResponse>('/users', {
+        params: {
+          page,
+          limit: pagination.itemsPerPage,
+          ...(searchTerm && { search: searchTerm }),
+          ...(selectedRole && { role: selectedRole })
+        }
+      });
+
+      console.log('Response from server:', response.data);
+
+      if (!response.data || !response.data.users) {
+        throw new Error('Invalid response format from server');
+      }
+
+      setUsers(response.data.users);
+      setPagination(response.data.pagination);
+    } catch (error: any) {
       console.error('Error fetching users:', error);
-      setError('Failed to load users. Please try again.');
+      setError(error.response?.data?.message || 'Failed to load users');
+      setUsers([]);
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchUsers(1);
+  }, [searchTerm, selectedRole]);
 
   const handleEdit = (user: User) => {
     setSelectedUser(user);
@@ -51,12 +88,18 @@ export function Users() {
   };
 
   const handleDelete = async (userId: string) => {
+    if (!userId) {
+      setError('Invalid user ID');
+      return;
+    }
+
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         await api.delete(`/users/${userId}`);
-        await fetchUsers();
-      } catch (error) {
+        await fetchUsers(pagination.currentPage);
+      } catch (error: any) {
         console.error('Error deleting user:', error);
+        setError(error.response?.data?.message || 'Failed to delete user');
       }
     }
   };
@@ -73,84 +116,88 @@ export function Users() {
       } else {
         await api.post('/users', userData);
       }
-      await fetchUsers();
+      await fetchUsers(pagination.currentPage);
       handleFormClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving user:', error);
+      setError(error.response?.data?.message || 'Failed to save user');
     }
   };
 
-  // Filter users based on search term and selected role
-  const filteredUsers = useMemo(() => {
-    console.log('Filtering users:', { searchTerm, selectedRole, totalUsers: users.length }); // Debug log
-    return users.filter((user) => {
-      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-      const searchLower = searchTerm.toLowerCase();
-      
-      const matchesSearch = searchTerm === '' || 
-        fullName.includes(searchLower) ||
-        user.email.toLowerCase().includes(searchLower);
-        
-      const matchesRole = selectedRole === '' || user.role === selectedRole;
-
-      return matchesSearch && matchesRole;
-    });
-  }, [users, searchTerm, selectedRole]);
-
-  const handleSearchChange = (value: string) => {
-    console.log('Search term changed:', value); // Debug log
-    setSearchTerm(value);
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      fetchUsers(newPage);
+    }
   };
-
-  const handleRoleChange = (value: string) => {
-    console.log('Role filter changed:', value); // Debug log
-    setSelectedRole(value);
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-48">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
-        {error}
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-4xl font-extrabold text-gray-900 mx-24 my-8">Gestion de Usuarios</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">User Management</h1>
         <button
           onClick={() => setIsFormOpen(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600 mx-24"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
         >
           <UserPlus className="h-4 w-4 mr-2" />
-          Añadir Usuario
+          Add User
         </button>
       </div>
 
       <UserFilters
         searchTerm={searchTerm}
         selectedRole={selectedRole}
-        onSearchChange={handleSearchChange}
-        onRoleChange={handleRoleChange}
-        totalUsers={users.length}
-        filteredCount={filteredUsers.length}
+        onSearchChange={setSearchTerm}
+        onRoleChange={setSelectedRole}
+        totalUsers={pagination.totalItems}
+        filteredCount={users.length}
       />
 
-      <UserList
-        users={filteredUsers}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        currentUserRole={currentUser?.role || ''}
-      />
+      {isLoading ? (
+        <div className="flex justify-center items-center h-48">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        </div>
+      ) : error ? (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative">
+          {error}
+        </div>
+      ) : (
+        <>
+          <UserList
+            users={users}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            currentUserRole={currentUser?.role || ''}
+          />
+
+          {users.length > 0 && (
+            <div className="flex justify-between items-center mt-4">
+              <p className="text-sm text-gray-700">
+                Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to{' '}
+                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{' '}
+                {pagination.totalItems} results
+              </p>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 1}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </button>
+                <button
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={pagination.currentPage === pagination.totalPages}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </button>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {isFormOpen && (
         <UserForm

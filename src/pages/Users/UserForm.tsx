@@ -11,14 +11,10 @@ const userSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(6, 'Password must be at least 6 characters').optional(),
   role: z.enum(['admin', 'manager', 'trainer', 'client']),
-  membershipId: z.string().optional().refine((val) => {
-    // Only require membership if role is client
-    if (val === 'client') {
-      return !!val;
-    }
-    return true;
-  }, 'Membership is required for clients'),
+  membershipId: z.string().optional(),
 });
+
+
 
 type UserFormData = {
   firstName: string;
@@ -30,7 +26,7 @@ type UserFormData = {
 };
 
 interface Membership {
-  id: string;
+  id_: string;
   name: string;
   description: string;
   cost: number;
@@ -41,6 +37,7 @@ interface UserFormProps {
   onSubmit: (data: UserFormData) => void;
   onClose: () => void;
 }
+
 
 export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
   const [memberships, setMemberships] = useState<Membership[]>([]);
@@ -87,11 +84,12 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
   }, []);
 
   const handleFormSubmit = (data: UserFormData) => {
-    // Only include membershipId if role is client
+    // Solo incluir membershipId si el rol es cliente
     const formData = {
       ...data,
       membershipId: data.role === 'client' ? data.membershipId : undefined,
     };
+    console.log('Submitting form data:', formData);
     onSubmit(formData);
   };
 
