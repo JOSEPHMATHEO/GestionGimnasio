@@ -4,15 +4,45 @@ import asyncHandler from 'express-async-handler';
 
 export const getClasses = asyncHandler(async (req, res) => {
   try {
-    const classes = await Class.find()
-      .populate({
-        path: 'trainer',
-        model: User,
-        select: 'firstName lastName'
-      })
-      .lean();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const [classes, total] = await Promise.all([
+      Class.find()
+        .populate({
+          path: 'trainer',
+          model: User,
+          select: 'firstName lastName'
+        })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+      Class.countDocuments()
+    ]);
+
+    // Transform the data to match the frontend interface
+    const transformedClasses = classes.map(classItem => ({
+      id: classItem._id.toString(),
+      name: classItem.name,
+      description: classItem.description,
+      trainer: {
+        firstName: classItem.trainer?.firstName || '',
+        lastName: classItem.trainer?.lastName || ''
+      },
+      schedule: classItem.schedule,
+      capacity: classItem.capacity
+    }));
     
-    res.json(classes);
+    res.json({
+      classes: transformedClasses,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalItems: total,
+        itemsPerPage: limit
+      }
+    });
   } catch (error) {
     console.error('Error in getClasses:', error);
     res.status(500).json({ 
@@ -37,7 +67,20 @@ export const getClassById = asyncHandler(async (req, res) => {
       throw new Error('Class not found');
     }
     
-    res.json(classItem);
+    // Transform the data to match the frontend interface
+    const transformedClass = {
+      id: classItem._id.toString(),
+      name: classItem.name,
+      description: classItem.description,
+      trainer: {
+        firstName: classItem.trainer?.firstName || '',
+        lastName: classItem.trainer?.lastName || ''
+      },
+      schedule: classItem.schedule,
+      capacity: classItem.capacity
+    };
+    
+    res.json(transformedClass);
   } catch (error) {
     console.error('Error in getClassById:', error);
     res.status(error.status || 500).json({
@@ -58,8 +101,29 @@ export const createClass = asyncHandler(async (req, res) => {
       schedule,
       capacity,
     });
+
+    const populatedClass = await Class.findById(classItem._id)
+      .populate({
+        path: 'trainer',
+        model: User,
+        select: 'firstName lastName'
+      })
+      .lean();
+
+    // Transform the data to match the frontend interface
+    const transformedClass = {
+      id: populatedClass._id.toString(),
+      name: populatedClass.name,
+      description: populatedClass.description,
+      trainer: {
+        firstName: populatedClass.trainer?.firstName || '',
+        lastName: populatedClass.trainer?.lastName || ''
+      },
+      schedule: populatedClass.schedule,
+      capacity: populatedClass.capacity
+    };
     
-    res.status(201).json(classItem);
+    res.status(201).json(transformedClass);
   } catch (error) {
     console.error('Error in createClass:', error);
     res.status(500).json({
@@ -86,7 +150,28 @@ export const updateClass = asyncHandler(async (req, res) => {
     classItem.capacity = capacity || classItem.capacity;
 
     const updatedClass = await classItem.save();
-    res.json(updatedClass);
+    const populatedClass = await Class.findById(updatedClass._id)
+      .populate({
+        path: 'trainer',
+        model: User,
+        select: 'firstName lastName'
+      })
+      .lean();
+
+    // Transform the data to match the frontend interface
+    const transformedClass = {
+      id: populatedClass._id.toString(),
+      name: populatedClass.name,
+      description: populatedClass.description,
+      trainer: {
+        firstName: populatedClass.trainer?.firstName || '',
+        lastName: populatedClass.trainer?.lastName || ''
+      },
+      schedule: populatedClass.schedule,
+      capacity: populatedClass.capacity
+    };
+
+    res.json(transformedClass);
   } catch (error) {
     console.error('Error in updateClass:', error);
     res.status(error.status || 500).json({

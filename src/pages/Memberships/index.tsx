@@ -4,30 +4,39 @@ import { MembershipForm } from './MembershipForm';
 import { CreditCard } from 'lucide-react';
 import api from '../../lib/axios';
 
-type Membership = {
+interface Membership {
   id: string;
   name: string;
   description: string;
   cost: number;
-};
+}
+
+interface MembershipFormData {
+  name: string;
+  description: string;
+  cost: number;
+}
 
 export function Memberships() {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
-
-  useEffect(() => {
-    fetchMemberships();
-  }, []);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchMemberships = async () => {
     try {
+      setError(null);
       const response = await api.get('/memberships');
       setMemberships(response.data);
     } catch (error) {
       console.error('Error fetching memberships:', error);
+      setError('Failed to load memberships');
     }
   };
+
+  useEffect(() => {
+    fetchMemberships();
+  }, []);
 
   const handleEdit = (membership: Membership) => {
     setSelectedMembership(membership);
@@ -35,12 +44,19 @@ export function Memberships() {
   };
 
   const handleDelete = async (membershipId: string) => {
+    if (!membershipId) {
+      setError('Invalid membership ID');
+      return;
+    }
+
     if (window.confirm('Are you sure you want to delete this membership?')) {
       try {
+        setError(null);
         await api.delete(`/memberships/${membershipId}`);
-        fetchMemberships();
+        await fetchMemberships();
       } catch (error) {
         console.error('Error deleting membership:', error);
+        setError('Failed to delete membership');
       }
     }
   };
@@ -48,19 +64,22 @@ export function Memberships() {
   const handleFormClose = () => {
     setIsFormOpen(false);
     setSelectedMembership(null);
+    setError(null);
   };
 
-  const handleFormSubmit = async (membershipData: Omit<Membership, 'id'>) => {
+  const handleFormSubmit = async (formData: MembershipFormData) => {
     try {
-      if (selectedMembership) {
-        await api.put(`/memberships/${selectedMembership.id}`, membershipData);
+      setError(null);
+      if (selectedMembership?.id) {
+        await api.put(`/memberships/${selectedMembership.id}`, formData);
       } else {
-        await api.post('/memberships', membershipData);
+        await api.post('/memberships', formData);
       }
-      fetchMemberships();
+      await fetchMemberships();
       handleFormClose();
     } catch (error) {
       console.error('Error saving membership:', error);
+      setError('Failed to save membership');
     }
   };
 

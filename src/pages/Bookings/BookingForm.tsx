@@ -25,6 +25,10 @@ interface ClassOption {
     startTime: string;
     endTime: string;
   };
+  trainer: {
+    firstName: string;
+    lastName: string;
+  };
 }
 
 interface BookingFormProps {
@@ -35,6 +39,8 @@ interface BookingFormProps {
 
 export function BookingForm({ booking, onSubmit, onClose }: BookingFormProps) {
   const [classes, setClasses] = useState<ClassOption[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   const defaultValues = {
     classId: booking?.classId || '',
@@ -54,10 +60,21 @@ export function BookingForm({ booking, onSubmit, onClose }: BookingFormProps) {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
+        setIsLoading(true);
+        setError(null);
         const response = await api.get('/classes');
-        setClasses(response.data);
+        
+        if (!response.data || !Array.isArray(response.data.classes)) {
+          throw new Error('Invalid response format from server');
+        }
+        
+        setClasses(response.data.classes);
       } catch (error) {
         console.error('Error fetching classes:', error);
+        setError('Failed to load classes. Please try again later.');
+        setClasses([]);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchClasses();
@@ -67,12 +84,24 @@ export function BookingForm({ booking, onSubmit, onClose }: BookingFormProps) {
     onSubmit(data);
   };
 
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
       <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-900">
-            {booking ? 'Editar Reserva' : 'Reservar una Clase'}
+            {booking ? 'Edit Booking' : 'Book a Class'}
           </h3>
           <button
             onClick={onClose}
@@ -83,20 +112,26 @@ export function BookingForm({ booking, onSubmit, onClose }: BookingFormProps) {
           </button>
         </div>
 
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <label htmlFor="classId" className="block text-sm font-medium text-gray-700">
-              Clase
+              Class
             </label>
             <select
               id="classId"
               {...register('classId')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
-              <option value="">Seleccione una clase</option>
+              <option value="">Select a class</option>
               {classes.map((classOption) => (
-                <option key={classOption._id} value={classOption._id}>
-                  {classOption.name} - {classOption.schedule.dayOfWeek} {classOption.schedule.startTime}
+                <option key={classOption.id} value={classOption.id}>
+                  {classOption.name} - {classOption.schedule.dayOfWeek} {classOption.schedule.startTime} - {classOption.trainer.firstName} {classOption.trainer.lastName}
                 </option>
               ))}
             </select>
@@ -107,7 +142,7 @@ export function BookingForm({ booking, onSubmit, onClose }: BookingFormProps) {
 
           <div>
             <label htmlFor="date" className="block text-sm font-medium text-gray-700">
-              Fecha
+              Date
             </label>
             <input
               id="date"
@@ -123,15 +158,15 @@ export function BookingForm({ booking, onSubmit, onClose }: BookingFormProps) {
           {booking && (
             <div>
               <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                Estado
+                Status
               </label>
               <select
                 id="status"
                 {...register('status')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
-                <option value="confirmed">Confirmado</option>
-                <option value="cancelled">Cancelado</option>
+                <option value="confirmed">Confirmed</option>
+                <option value="cancelled">Cancelled</option>
               </select>
             </div>
           )}
@@ -142,11 +177,11 @@ export function BookingForm({ booking, onSubmit, onClose }: BookingFormProps) {
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600"
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
             >
               {booking ? 'Update' : 'Book'}
             </button>

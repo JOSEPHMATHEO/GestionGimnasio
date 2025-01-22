@@ -1,20 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X } from 'lucide-react';
-
-// Enum de los días de la semana para el campo de 'schedule'
-const daysOfWeek = [
-  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
-];
+import api from '../../lib/axios';
 
 const classSchema = z.object({
   name: z.string().min(2, 'Class name must be at least 2 characters'),
   description: z.string().min(10, 'Description must be at least 10 characters'),
   trainer: z.string().min(1, 'Trainer is required'),
   schedule: z.object({
-    dayOfWeek: z.enum(daysOfWeek),
+    dayOfWeek: z.enum(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']),
     startTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
     endTime: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
   }),
@@ -27,7 +23,7 @@ const classSchema = z.object({
 type ClassFormData = {
   name: string;
   description: string;
-  trainer: string; // Este es el ObjectId del entrenador
+  trainer: string;
   schedule: {
     dayOfWeek: string;
     startTime: string;
@@ -36,18 +32,29 @@ type ClassFormData = {
   capacity: number;
 };
 
+interface Trainer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+}
+
 interface ClassFormProps {
   classItem?: ClassFormData | null;
   onSubmit: (data: ClassFormData) => void;
   onClose: () => void;
-  trainers: any[]; // Recibir lista de entrenadores
 }
 
-export function ClassForm({ classItem, onSubmit, onClose, trainers }: ClassFormProps) {
+export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
+  const [trainers, setTrainers] = useState<Trainer[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const defaultValues = {
     name: classItem?.name || '',
     description: classItem?.description || '',
-    trainer: classItem?.trainer || '', // Esto será el ObjectId del entrenador
+    trainer: classItem?.trainer || '',
     schedule: {
       dayOfWeek: classItem?.schedule?.dayOfWeek || 'Monday',
       startTime: classItem?.schedule?.startTime || '09:00',
@@ -65,26 +72,71 @@ export function ClassForm({ classItem, onSubmit, onClose, trainers }: ClassFormP
     defaultValues,
   });
 
+  useEffect(() => {
+    const fetchTrainers = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        console.log('Fetching trainers...');
+        const response = await api.get('/users', {
+          params: {
+            role: 'trainer'
+          }
+        });
+
+        console.log('Response data:', response.data);
+
+        // Validate response structure
+        if (!response.data) {
+          throw new Error('No data received from server');
+        }
+
+        // Check if response is an array directly
+        const usersList = Array.isArray(response.data) ? response.data : 
+                         response.data.users ? response.data.users : [];
+
+        // Filter trainers
+        const trainersList = usersList.filter(user => user.role === 'trainer');
+        console.log('Filtered trainers:', trainersList);
+
+        if (trainersList.length === 0) {
+          console.log('No trainers found in the response');
+        }
+
+        setTrainers(trainersList);
+      } catch (error: any) {
+        console.error('Error fetching trainers:', error);
+        setError(error.message || 'Failed to load trainers. Please try again later.');
+        setTrainers([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTrainers();
+  }, []);
+
   const handleFormSubmit = (data: ClassFormData) => {
     const formattedData = {
-      name: data.name,
-      description: data.description,
-      trainer: data.trainer,
-      schedule: {
-        dayOfWeek: data.schedule.dayOfWeek,
-        startTime: String(data.schedule.startTime), // Asegúrate de enviar cadenas.
-        endTime: String(data.schedule.endTime),
-      },
+      ...data,
       capacity: Number(data.capacity),
     };
-    
-    console.log("Datos enviados al backend:", formattedData);
     onSubmit(formattedData);
   };
-  
-  
-  
-  
+
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="flex justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <span className="ml-2">Loading trainers...</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
@@ -102,10 +154,16 @@ export function ClassForm({ classItem, onSubmit, onClose, trainers }: ClassFormP
           </button>
         </div>
 
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Nombre de la Clase
+              Class Name
             </label>
             <input
               id="name"
@@ -120,7 +178,7 @@ export function ClassForm({ classItem, onSubmit, onClose, trainers }: ClassFormP
 
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-              Descripción
+              Description
             </label>
             <textarea
               id="description"
@@ -135,61 +193,67 @@ export function ClassForm({ classItem, onSubmit, onClose, trainers }: ClassFormP
 
           <div>
             <label htmlFor="trainer" className="block text-sm font-medium text-gray-700">
-              Entrenador
+              Trainer
             </label>
             <select
               id="trainer"
               {...register('trainer')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
-              <option value="">Seleccione un entrenador</option>
-              {trainers.map((trainer) => (
-                <option key={trainer._id} value={trainer._id}>
-                  {trainer.firstName} {trainer.lastName}
-                </option>
-              ))}
+              <option value="">Select a trainer</option>
+              {trainers && trainers.length > 0 ? (
+                trainers.map((trainer) => (
+                  <option key={trainer.id} value={trainer.id}>
+                    {trainer.firstName} {trainer.lastName}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No trainers available</option>
+              )}
             </select>
             {errors.trainer && (
               <p className="mt-1 text-sm text-red-600">{errors.trainer.message}</p>
             )}
+            {trainers.length === 0 && !isLoading && (
+              <p className="mt-1 text-sm text-yellow-600">
+                No trainers found. Please make sure there are trainers registered in the system.
+              </p>
+            )}
           </div>
 
           <div>
-            <label htmlFor="schedule.dayOfWeek" className="block text-sm font-medium text-gray-700">
-              Día de la semana
+            <label htmlFor="dayOfWeek" className="block text-sm font-medium text-gray-700">
+              Day of Week
             </label>
             <select
-              id="schedule.dayOfWeek"
+              id="dayOfWeek"
               {...register('schedule.dayOfWeek')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
-              {daysOfWeek.map((day) => (
-                <option key={day} value={day}>
-                  {day}
-                </option>
+              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map((day) => (
+                <option key={day} value={day}>{day}</option>
               ))}
             </select>
           </div>
 
-          <div className="flex space-x-4">
-            <div className="w-1/2">
-              <label htmlFor="schedule.startTime" className="block text-sm font-medium text-gray-700">
-                Hora de inicio
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+                Start Time
               </label>
               <input
-                id="schedule.startTime"
+                id="startTime"
                 type="time"
                 {...register('schedule.startTime')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
             </div>
-
-            <div className="w-1/2">
-              <label htmlFor="schedule.endTime" className="block text-sm font-medium text-gray-700">
-                Hora de fin
+            <div>
+              <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+                End Time
               </label>
               <input
-                id="schedule.endTime"
+                id="endTime"
                 type="time"
                 {...register('schedule.endTime')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -199,11 +263,12 @@ export function ClassForm({ classItem, onSubmit, onClose, trainers }: ClassFormP
 
           <div>
             <label htmlFor="capacity" className="block text-sm font-medium text-gray-700">
-              Capacidad
+              Capacity
             </label>
             <input
               id="capacity"
               type="number"
+              min="1"
               {...register('capacity')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             />
@@ -212,19 +277,19 @@ export function ClassForm({ classItem, onSubmit, onClose, trainers }: ClassFormP
             )}
           </div>
 
-          <div className="flex justify-end space-x-4">
+          <div className="flex justify-end space-x-3">
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-200 hover:bg-gray-300"
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600"
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
             >
-              Guardar
+              {classItem ? 'Update' : 'Create'}
             </button>
           </div>
         </form>

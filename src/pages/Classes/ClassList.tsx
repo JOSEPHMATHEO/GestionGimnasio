@@ -24,8 +24,25 @@ interface ClassListProps {
   currentUserRole: string;
 }
 
-export function ClassList({ classes, onEdit, onDelete, currentUserRole }: ClassListProps) {
+export function ClassList({ classes = [], onEdit, onDelete, currentUserRole }: ClassListProps) {
   const canManageClass = ['admin', 'manager', 'trainer'].includes(currentUserRole);
+
+  if (!Array.isArray(classes)) {
+    console.error('Classes prop is not an array:', classes);
+    return (
+      <div className="bg-white shadow-sm rounded-lg p-6 text-center">
+        <p className="text-gray-500">Error loading classes. Please try again later.</p>
+      </div>
+    );
+  }
+
+  if (classes.length === 0) {
+    return (
+      <div className="bg-white shadow-sm rounded-lg p-6 text-center">
+        <p className="text-gray-500">No classes available.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white shadow-lg rounded-xl overflow-hidden ring-1 ring-gray-200 mx-24 my-26">

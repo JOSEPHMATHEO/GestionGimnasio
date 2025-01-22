@@ -121,13 +121,13 @@ export function Bookings() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-900">Class Bookings</h1>
+        <h1 className="text-4xl font-extrabold text-gray-900 mx-24 my-8">Reservas de Clases</h1>
         <button
           onClick={() => setIsFormOpen(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600 mx-24"
         >
           <Calendar className="h-4 w-4 mr-2" />
-          Book Class
+          Reservar Clase
         </button>
       </div>
 
@@ -140,11 +140,11 @@ export function Bookings() {
       />
 
       {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex justify-between items-center mt-4 mx-24 p-4">
         <p className="text-sm text-gray-700">
-          Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to{' '}
-          {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{' '}
-          {pagination.totalItems} results
+          Mostrando {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} desde{' '}
+          {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de{' '}
+          {pagination.totalItems} resultados
         </p>
         <div className="flex space-x-2">
           <button
@@ -152,7 +152,7 @@ export function Bookings() {
             disabled={pagination.currentPage === 1}
             className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 mr-1" />
             Previous
           </button>
           <button
@@ -161,7 +161,7 @@ export function Bookings() {
             className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 ml-1" />
           </button>
         </div>
       </div>
