@@ -34,22 +34,22 @@ export function MembershipSelect({ register, error }: MembershipSelectProps) {
   }, []);
 
   if (loading) {
-    return <div>Loading memberships...</div>;
+    return <div>Cargando membresia...</div>;
   }
 
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700">
-        Select Membership
+        Seleccione Membresia
       </label>
       <select
         {...register('membershipId')}
         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
       >
-        <option value="">Select a membership plan</option>
+        <option value="">Selecciona una membresia</option>
         {memberships.map((membership) => (
           <option key={membership.id} value={membership.id}>
-            {membership.name} - ${membership.cost}/month
+            {membership.name} - ${membership.cost}/mes
           </option>
         ))}
       </select>
@@ -60,7 +60,7 @@ export function MembershipSelect({ register, error }: MembershipSelectProps) {
           <div key={membership.id} className="p-4 border rounded-lg">
             <h3 className="font-medium">{membership.name}</h3>
             <p className="text-sm text-gray-600">{membership.description}</p>
-            <p className="mt-2 text-lg font-bold">${membership.cost}/month</p>
+            <p className="mt-2 text-lg font-bold">${membership.cost}/mes</p>
           </div>
         ))}
       </div>

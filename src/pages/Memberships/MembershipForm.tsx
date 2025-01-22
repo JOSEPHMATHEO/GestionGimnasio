@@ -76,7 +76,7 @@ export function MembershipForm({ membership, onSubmit, onClose }: MembershipForm
               type="text"
               {...register('name')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="e.g., Premium Plan"
+              placeholder="e.j. Plan Premiun"
             />
             {errors.name && (
               <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
@@ -92,7 +92,7 @@ export function MembershipForm({ membership, onSubmit, onClose }: MembershipForm
               {...register('description')}
               rows={3}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="Describe the membership benefits..."
+              placeholder="Describa los beneficios de la mebresia"
             />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>

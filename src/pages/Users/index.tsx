@@ -83,20 +83,36 @@ export function Users() {
   }, [searchTerm, selectedRole]);
 
   const handleEdit = (user: User) => {
+    console.log('Editing user:', user);
     setSelectedUser(user);
     setIsFormOpen(true);
   };
 
   const handleDelete = async (userId: string) => {
+    setError(null); // Clear any previous errors
+
     if (!userId) {
       setError('Invalid user ID');
       return;
     }
 
-    if (window.confirm('Are you sure you want to delete this user?')) {
+    // Find the user to show their name in the confirmation
+    const userToDelete = users.find(u => u.id === userId);
+    if (!userToDelete) {
+      setError('User not found');
+      return;
+    }
+
+    const confirmMessage = `Are you sure you want to delete ${userToDelete.firstName} ${userToDelete.lastName}?`;
+    
+    if (window.confirm(confirmMessage)) {
       try {
+        console.log('Deleting user with ID:', userId);
         await api.delete(`/users/${userId}`);
+        console.log('User deleted successfully');
         await fetchUsers(pagination.currentPage);
+        // Clear any error if deletion was successful
+        setError(null);
       } catch (error: any) {
         console.error('Error deleting user:', error);
         setError(error.response?.data?.message || 'Failed to delete user');
@@ -133,13 +149,13 @@ export function Users() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-semibold text-gray-900">User Management</h1>
+        <h1 className="text-4xl font-extrabold text-gray-900 mx-24 my-8">User Management</h1>
         <button
           onClick={() => setIsFormOpen(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+          className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600 mx-24"
         >
           <UserPlus className="h-4 w-4 mr-2" />
-          Add User
+          Añadir Usuario
         </button>
       </div>
 
@@ -170,11 +186,11 @@ export function Users() {
           />
 
           {users.length > 0 && (
-            <div className="flex justify-between items-center mt-4">
+            <div className="flex justify-between items-center mt-4 mx-20 p-4">
               <p className="text-sm text-gray-700">
-                Showing {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} to{' '}
-                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} of{' '}
-                {pagination.totalItems} results
+                Mostrando {((pagination.currentPage - 1) * pagination.itemsPerPage) + 1} desde{' '}
+                {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)} de{' '}
+                {pagination.totalItems} resultados
               </p>
               <div className="flex space-x-2">
                 <button
@@ -183,14 +199,14 @@ export function Users() {
                   className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
-                  Previous
+                  Anterior
                 </button>
                 <button
                   onClick={() => handlePageChange(pagination.currentPage + 1)}
                   disabled={pagination.currentPage === pagination.totalPages}
                   className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  Siguiente
                   <ChevronRight className="h-4 w-4 ml-1" />
                 </button>
               </div>

@@ -9,35 +9,32 @@ const userSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
   lastName: z.string().min(2, 'Last name must be at least 2 characters'),
   email: z.string().email('Invalid email format'),
-  password: z.string().min(6, 'Password must be at least 6 characters').optional(),
+  password: z.string().min(6, 'Password must be at least 6 characters').optional().nullable(),
   role: z.enum(['admin', 'manager', 'trainer', 'client']),
-  membershipId: z.string().optional(),
+  membershipId: z.string().optional().nullable(),
 });
 
-
-
-type UserFormData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password?: string;
-  role: 'admin' | 'manager' | 'trainer' | 'client';
-  membershipId?: string;
-};
+type UserFormData = z.infer<typeof userSchema>;
 
 interface Membership {
-  id_: string;
+  _id: string;
   name: string;
   description: string;
   cost: number;
 }
 
 interface UserFormProps {
-  user?: UserFormData | null;
+  user?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    role: string;
+    membershipId?: string;
+  } | null;
   onSubmit: (data: UserFormData) => void;
   onClose: () => void;
 }
-
 
 export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
   const [memberships, setMemberships] = useState<Membership[]>([]);
@@ -48,9 +45,9 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
     firstName: user?.firstName || '',
     lastName: user?.lastName || '',
     email: user?.email || '',
-    role: user?.role || 'client',
-    membershipId: user?.membershipId || '',
     password: '',
+    role: (user?.role as UserFormData['role']) || 'client',
+    membershipId: user?.membershipId || null,
   };
 
   const {
@@ -63,7 +60,6 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
     defaultValues,
   });
 
-  // Watch the role field to show/hide membership select
   const roleValue = watch('role');
 
   useEffect(() => {
@@ -84,11 +80,15 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
   }, []);
 
   const handleFormSubmit = (data: UserFormData) => {
-    // Solo incluir membershipId si el rol es cliente
+    // Prepare form data
     const formData = {
       ...data,
+      // Only include password if it's provided and not empty
+      password: data.password ? data.password : undefined,
+      // Only include membershipId for clients
       membershipId: data.role === 'client' ? data.membershipId : undefined,
     };
+
     console.log('Submitting form data:', formData);
     onSubmit(formData);
   };
@@ -119,10 +119,16 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
           </button>
         </div>
 
+        {error && (
+          <div className="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-              Nombres
+              Nombre
             </label>
             <input
               id="firstName"
@@ -137,7 +143,7 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
 
           <div>
             <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-              Apellidos
+              Apellido
             </label>
             <input
               id="lastName"
@@ -152,7 +158,7 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-              Email
+              Correo electrónico
             </label>
             <input
               id="email"
@@ -165,26 +171,24 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
             )}
           </div>
 
-          {!user && (
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Contraseña
-              </label>
-              <input
-                id="password"
-                type="password"
-                {...register('password')}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
-              {errors.password && (
-                <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-              )}
-            </div>
-          )}
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              {user ? 'New Password (optional)' : 'Password'}
+            </label>
+            <input
+              id="password"
+              type="password"
+              {...register('password')}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
+            )}
+          </div>
 
           <div>
             <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-              Role
+              Rol
             </label>
             <select
               id="role"
@@ -201,45 +205,26 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
             )}
           </div>
 
-          {/* Show membership select only for clients */}
           {roleValue === 'client' && (
             <div>
               <label htmlFor="membershipId" className="block text-sm font-medium text-gray-700">
-                Membership Plan
+                Planes de Membresia
               </label>
               <select
                 id="membershipId"
                 {...register('membershipId')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
-                <option value="">Select a membership plan</option>
+                <option value="">Selecciones una membresia</option>
                 {memberships.map((membership) => (
-                  <option key={membership.id} value={membership.id}>
-                    {membership.name} - ${membership.cost}/month
+                  <option key={membership._id} value={membership._id}>
+                    {membership.name} - ${membership.cost}/mes
                   </option>
                 ))}
               </select>
               {errors.membershipId && (
                 <p className="mt-1 text-sm text-red-600">{errors.membershipId.message}</p>
               )}
-
-              {/* Show membership details */}
-              
-              <div className="mt-4 overflow-x-auto">
-                <div className="flex space-x-4">
-                  {memberships.map((membership) => (
-                    <div 
-                      key={membership.id} 
-                      className="p-3 border rounded-md min-w-[250px] max-w-xs flex-shrink-0"
-                    >
-                      <h4 className="font-medium">{membership.name}</h4>
-                      <p className="text-sm text-gray-600">{membership.description}</p>
-                      <p className="mt-1 font-bold">${membership.cost}/month</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
             </div>
           )}
 
@@ -249,11 +234,11 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              Cancelar
+              Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600"
+              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600 mx-24"
             >
               {user ? 'Actualizar' : 'Crear'}
             </button>

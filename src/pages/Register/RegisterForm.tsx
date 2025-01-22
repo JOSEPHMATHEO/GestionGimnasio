@@ -70,7 +70,7 @@ export function RegisterForm() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Dumbbell className="h-8 w-8 text-indigo-600 animate-spin mx-auto" />
-          <p className="mt-2 text-sm text-gray-500">Loading membership plans...</p>
+          <p className="mt-2 text-sm text-gray-500">Cragando planes de membresia...</p>
         </div>
       </div>
     );
@@ -86,7 +86,7 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-          First Name
+          Nombre
         </label>
         <input
           {...register('firstName')}
@@ -99,7 +99,7 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-          Last Name
+          Apellido
         </label>
         <input
           {...register('lastName')}
@@ -112,7 +112,7 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-          Email address
+          Correo electrónico
         </label>
         <input
           type="email"
@@ -126,7 +126,7 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-          Password
+          Contraseña
         </label>
         <input
           type="password"
@@ -140,16 +140,16 @@ export function RegisterForm() {
 
       <div>
         <label htmlFor="membershipId" className="block text-sm font-medium text-gray-700">
-          Select Membership Plan
+          Seleccione un Plan de Membresia
         </label>
         <select
           {...register('membershipId')}
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
         >
-          <option value="">Choose a membership plan</option>
+          <option value="">Elija una membresia</option>
           {memberships.map((membership) => (
             <option key={membership._id} value={membership._id}>
-              {membership.name} - ${membership.cost}/month
+              {membership.name} - ${membership.cost}/mes
             </option>
           ))}
         </select>
@@ -167,7 +167,7 @@ export function RegisterForm() {
               >
               <h4 className="font-medium">{membership.name}</h4>
               <p className="text-sm text-gray-600">{membership.description}</p>
-              <p className="mt-1 font-bold">${membership.cost}/month</p>
+              <p className="mt-1 font-bold">${membership.cost}/mes</p>
             </div>
           ))}
         </div>
@@ -175,9 +175,9 @@ export function RegisterForm() {
 
       <button
         type="submit"
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600 mx-24"
       >
-        Register
+        Registrar
       </button>
     </form>
   );

@@ -183,29 +183,51 @@ export const createUser = asyncHandler(async (req, res) => {
 export const updateUser = asyncHandler(async (req, res) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, email, role, membershipId } = req.body;
+    const { firstName, lastName, email, role, membershipId, password } = req.body;
+
+    console.log('Updating user:', { id, firstName, lastName, email, role, membershipId });
 
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Update user fields
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
-    user.email = email || user.email;
-    user.role = role || user.role;
-
-    // Update membership if role is client
-    if (role === 'client' && membershipId) {
-      const membershipExists = await Membership.findById(membershipId);
-      if (!membershipExists) {
-        return res.status(400).json({ message: 'Invalid membership selected' });
+    // Validate email uniqueness if it's being changed
+    if (email !== user.email) {
+      const existingUser = await User.findOne({ email, _id: { $ne: id } });
+      if (existingUser) {
+        return res.status(400).json({ message: 'Email already in use' });
       }
-      user.membership = membershipId;
+    }
+
+    // Update basic fields
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.email = email;
+    user.role = role;
+
+    // Update password if provided
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(password, salt);
+    }
+
+    // Handle membership
+    if (role === 'client') {
+      if (membershipId) {
+        const membershipExists = await Membership.findById(membershipId);
+        if (!membershipExists) {
+          return res.status(400).json({ message: 'Invalid membership selected' });
+        }
+        user.membership = membershipId;
+      }
+    } else {
+      user.membership = undefined;
     }
 
     const updatedUser = await user.save();
+    console.log('User updated successfully:', updatedUser._id);
+
     const populatedUser = await User.findById(updatedUser._id)
       .select('-password')
       .populate('membership', 'name cost')
@@ -227,21 +249,39 @@ export const updateUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     console.error('Error in updateUser:', error);
-    res.status(500).json({ message: 'Error updating user' });
+    res.status(500).json({ 
+      message: 'Error updating user',
+      error: error.message 
+    });
   }
 });
 
 export const deleteUser = asyncHandler(async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    console.log('Attempting to delete user with ID:', id);
+
+    const user = await User.findById(id);
+    
     if (!user) {
+      console.log('User not found with ID:', id);
       return res.status(404).json({ message: 'User not found' });
     }
 
     await user.deleteOne();
+    console.log('User deleted successfully:', id);
+    
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error in deleteUser:', error);
-    res.status(500).json({ message: 'Error deleting user' });
+    res.status(500).json({ 
+      message: 'Error deleting user',
+      error: error.message 
+    });
   }
 });

@@ -13,18 +13,13 @@ import {
 import api from '../lib/axios';
 
 interface DashboardStats {
-  // Admin & Manager stats
   totalClients?: number;
   totalTrainers?: number;
   totalMemberships?: number;
   totalRevenue?: number;
-
-  // Trainer stats
   activeClasses?: number;
   upcomingBookings?: number;
   completedBookings?: number;
-
-  // Client stats
   membershipStatus?: {
     name: string;
     validUntil: string;
@@ -38,11 +33,12 @@ interface StatCardProps {
   value: string | number;
   icon: React.ReactNode;
   description?: string;
+  className?: string;
 }
 
-function StatCard({ title, value, icon, description }: StatCardProps) {
+function StatCard({ title, value, icon, description, className = '' }: StatCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-6">
+    <div className={`bg-white rounded-lg shadow-sm p-6 ${className}`}>
       <div className="flex items-center">
         <div className="p-3 rounded-full bg-indigo-50 text-indigo-600">
           {icon}
@@ -84,9 +80,7 @@ export function Dashboard() {
           endpoint = '/stats/client';
         }
 
-        console.log('Fetching stats for role:', user.role);
         const response = await api.get(endpoint);
-        console.log('Stats response:', response.data);
         setStats(response.data);
       } catch (error: any) {
         console.error('Error fetching stats:', error);
@@ -125,11 +119,11 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-gray-900">Dashboard Overview</h1>
+      <h1 className="text-2xl font-semibold text-gray-900">Welcome back, {user.firstName}!</h1>
       
       {/* Admin and Manager Stats */}
       {(user.role === 'admin' || user.role === 'manager') && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <StatCard
             title="Total Clients"
             value={stats.totalClients || 0}
@@ -155,7 +149,7 @@ export function Dashboard() {
 
       {/* Trainer Stats */}
       {user.role === 'trainer' && (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <StatCard
             title="Active Classes"
             value={stats.activeClasses || 0}
@@ -177,7 +171,7 @@ export function Dashboard() {
       {/* Client Stats */}
       {user.role === 'client' && (
         <>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <StatCard
               title="Membership Status"
               value={stats.membershipStatus?.name || 'No active membership'}

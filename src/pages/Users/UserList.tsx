@@ -33,6 +33,23 @@ export function UserList({ users, onEdit, onDelete, currentUserRole }: UserListP
     );
   }
 
+  const handleDelete = (user: User) => {
+    // Verificar que el ID existe antes de llamar a onDelete
+    if (!user || !user.id) {
+      console.error('Invalid user or user ID');
+      return;
+    }
+    onDelete(user.id);
+  };
+
+  if (users.length === 0) {
+    return (
+      <div className="bg-white shadow-sm rounded-lg p-6 text-center">
+        <p className="text-gray-500">No users found matching your criteria.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white shadow-lg rounded-xl overflow-hidden ring-1 ring-gray-200 mx-24 my-26">
       <table className="min-w-full divide-y divide-gray-200">
@@ -83,7 +100,7 @@ export function UserList({ users, onEdit, onDelete, currentUserRole }: UserListP
                       <Edit2 className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => onDelete(user._id)}
+                      onClick={() => onDelete(user.id)}
                       className="text-red-600 hover:text-red-900"
                     >
                       <Trash2 className="h-4 w-4" />

@@ -22,15 +22,28 @@ export function Memberships() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedMembership, setSelectedMembership] = useState<Membership | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchMemberships = async () => {
     try {
       setError(null);
+      setIsLoading(true);
       const response = await api.get('/memberships');
-      setMemberships(response.data);
-    } catch (error) {
+      
+      // Transformar los datos para asegurar que el id esté en el formato correcto
+      const transformedMemberships = response.data.map((membership: any) => ({
+        id: membership._id,
+        name: membership.name,
+        description: membership.description,
+        cost: membership.cost
+      }));
+      
+      setMemberships(transformedMemberships);
+    } catch (error: any) {
       console.error('Error fetching memberships:', error);
-      setError('Failed to load memberships');
+      setError(error.response?.data?.message || 'Failed to load memberships');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -39,24 +52,26 @@ export function Memberships() {
   }, []);
 
   const handleEdit = (membership: Membership) => {
+    console.log('Editando mebresia:', membership);
     setSelectedMembership(membership);
     setIsFormOpen(true);
   };
 
   const handleDelete = async (membershipId: string) => {
-    if (!membershipId) {
-      setError('Invalid membership ID');
+    const membership = memberships.find(m => m.id === membershipId);
+    if (!membership) {
+      setError('Membresia no encontrada');
       return;
     }
 
-    if (window.confirm('Are you sure you want to delete this membership?')) {
+    if (window.confirm(`Esta seguro que desea eliminar la mebresia "${membership.name}"?`)) {
       try {
         setError(null);
         await api.delete(`/memberships/${membershipId}`);
         await fetchMemberships();
-      } catch (error) {
-        console.error('Error deleting membership:', error);
-        setError('Failed to delete membership');
+      } catch (error: any) {
+        console.error('Error eliminado la membreisa:', error);
+        setError(error.response?.data?.message || 'Fallo al eliminar membresia');
       }
     }
   };
@@ -70,16 +85,16 @@ export function Memberships() {
   const handleFormSubmit = async (formData: MembershipFormData) => {
     try {
       setError(null);
-      if (selectedMembership?.id) {
+      if (selectedMembership) {
         await api.put(`/memberships/${selectedMembership.id}`, formData);
       } else {
         await api.post('/memberships', formData);
       }
       await fetchMemberships();
       handleFormClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving membership:', error);
-      setError('Failed to save membership');
+      setError(error.response?.data?.message || 'Failed to save membership');
     }
   };
 
@@ -96,11 +111,23 @@ export function Memberships() {
         </button>
       </div>
 
-      <MembershipList
-        memberships={memberships}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="flex justify-center items-center h-48">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        </div>
+      ) : (
+        <MembershipList
+          memberships={memberships}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
 
       {isFormOpen && (
         <MembershipForm
