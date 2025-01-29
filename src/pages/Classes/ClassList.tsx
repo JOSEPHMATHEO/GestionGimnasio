@@ -27,6 +27,8 @@ interface ClassListProps {
 export function ClassList({ classes = [], onEdit, onDelete, currentUserRole }: ClassListProps) {
   const canManageClass = ['admin', 'manager', 'trainer'].includes(currentUserRole);
 
+  
+
   if (!Array.isArray(classes)) {
     console.error('Classes prop is not an array:', classes);
     return (
@@ -107,7 +109,7 @@ export function ClassList({ classes = [], onEdit, onDelete, currentUserRole }: C
                         <Edit2 className="h-5 w-5" />
                       </button>
                       <button
-                        onClick={() => onDelete(classItem._id)}
+                        onClick={() => onDelete(classItem.id)}
                         className="text-red-600 hover:text-red-800 transition duration-150"
                       >
                         <Trash2 className="h-5 w-5" />

@@ -183,20 +183,30 @@ export const updateClass = asyncHandler(async (req, res) => {
 
 export const deleteClass = asyncHandler(async (req, res) => {
   try {
-    const classItem = await Class.findById(req.params.id);
-    
-    if (!classItem) {
-      res.status(404);
-      throw new Error('Class not found');
+    const classId = req.params.id;
+
+    // Verificar si la clase existe
+    const classToDelete = await Class.findById(classId);
+    if (!classToDelete) {
+      return res.status(404).json({ message: 'Class not found' });
     }
 
-    await classItem.deleteOne();
+    // Verificar si hay reservas para esta clase
+    const bookingsExist = await Booking.exists({ class: classId });
+    if (bookingsExist) {
+      return res.status(400).json({ 
+        message: 'Cannot delete class because it has associated bookings. Please remove all bookings first.' 
+      });
+    }
+
+    // Eliminar la clase
+    await classToDelete.deleteOne();
     res.json({ message: 'Class deleted successfully' });
   } catch (error) {
-    console.error('Error in deleteClass:', error);
-    res.status(error.status || 500).json({
-      message: error.message || 'Error deleting class',
-      error: error.message
+    console.error('Error deleting class:', error);
+    res.status(500).json({ 
+      message: 'Error deleting class',
+      error: error.message 
     });
   }
 });

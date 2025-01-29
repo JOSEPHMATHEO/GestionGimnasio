@@ -131,7 +131,7 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
         <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
           <div className="flex justify-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-            <span className="ml-2">Loading trainers...</span>
+            <span className="ml-2">Cargando Entrenadores...</span>
           </div>
         </div>
       </div>
@@ -143,7 +143,7 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
       <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-900">
-            {classItem ? 'Edit Class' : 'Add Class'}
+            {classItem ? 'Editar Clase' : 'Añadir Clase'}
           </h3>
           <button
             onClick={onClose}
@@ -163,7 +163,7 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Class Name
+              Nombre de la clase
             </label>
             <input
               id="name"
@@ -178,7 +178,7 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
 
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-              Description
+              Descripción
             </label>
             <textarea
               id="description"
@@ -193,14 +193,14 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
 
           <div>
             <label htmlFor="trainer" className="block text-sm font-medium text-gray-700">
-              Trainer
+              Entrenador
             </label>
             <select
               id="trainer"
               {...register('trainer')}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
-              <option value="">Select a trainer</option>
+              <option value="">Selecciona un Entrenador</option>
               {trainers && trainers.length > 0 ? (
                 trainers.map((trainer) => (
                   <option key={trainer.id} value={trainer.id}>
@@ -208,7 +208,7 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
                   </option>
                 ))
               ) : (
-                <option disabled>No trainers available</option>
+                <option disabled>No hay entrenadores disponibles</option>
               )}
             </select>
             {errors.trainer && (
@@ -216,14 +216,14 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
             )}
             {trainers.length === 0 && !isLoading && (
               <p className="mt-1 text-sm text-yellow-600">
-                No trainers found. Please make sure there are trainers registered in the system.
+                Entrenador no encotrado. Porvafor, asegurese de que hay entrenadores registrados en el sistema.
               </p>
             )}
           </div>
 
           <div>
             <label htmlFor="dayOfWeek" className="block text-sm font-medium text-gray-700">
-              Day of Week
+              Día de la semana
             </label>
             <select
               id="dayOfWeek"
@@ -239,7 +239,7 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
-                Start Time
+                Hora de Inicio
               </label>
               <input
                 id="startTime"
@@ -250,7 +250,7 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
             </div>
             <div>
               <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
-                End Time
+                Hora de Finalización
               </label>
               <input
                 id="endTime"
@@ -263,7 +263,7 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
 
           <div>
             <label htmlFor="capacity" className="block text-sm font-medium text-gray-700">
-              Capacity
+              Capacidad
             </label>
             <input
               id="capacity"
@@ -283,13 +283,13 @@ export function ClassForm({ classItem, onSubmit, onClose }: ClassFormProps) {
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               type="submit"
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700"
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-zinc-900 hover:bg-zinc-600"
             >
-              {classItem ? 'Update' : 'Create'}
+              {classItem ? 'Actualizar' : 'Crear'}
             </button>
           </div>
         </form>

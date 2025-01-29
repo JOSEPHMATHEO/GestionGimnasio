@@ -19,11 +19,11 @@ export function UserFilters({
   filteredCount,
 }: UserFiltersProps) {
   const roles = [
-    { value: '', label: 'All Roles' },
-    { value: 'admin', label: 'Administrators' },
+    { value: '', label: 'Todos los Roles' },
+    { value: 'admin', label: 'Administradores' },
     { value: 'manager', label: 'Managers' },
-    { value: 'trainer', label: 'Trainers' },
-    { value: 'client', label: 'Clients' },
+    { value: 'trainer', label: 'Entrenadores' },
+    { value: 'client', label: 'Clientes' },
   ];
 
   return (
@@ -32,10 +32,10 @@ export function UserFilters({
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Filter className="h-5 w-5 text-gray-400" />
-            <span className="text-sm font-medium text-gray-700">Filters</span>
+            <span className="text-sm font-medium text-gray-700">Filtros</span>
           </div>
           <div className="text-sm text-gray-500">
-            Showing {filteredCount} of {totalUsers} users
+            Mostrando {filteredCount} de {totalUsers} usuarios
           </div>
         </div>
 
@@ -47,7 +47,7 @@ export function UserFilters({
             </div>
             <input
               type="text"
-              placeholder="Search by name or email..."
+              placeholder="Buscar por nombre o por email..."
               value={searchTerm}
               onChange={(e) => onSearchChange(e.target.value)}
               className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

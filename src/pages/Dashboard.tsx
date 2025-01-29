@@ -96,7 +96,7 @@ export function Dashboard() {
   if (!user) {
     return (
       <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-        Please log in to view the dashboard.
+        Por favor, inicia sesion para visualizar el dashboard.
       </div>
     );
   }
@@ -119,28 +119,28 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-extrabold text-gray-900 mx-4 my-4">Bienvenio de Vuelta, {user.firstName}!</h1>
+      <h1 className="text-2xl font-extrabold text-gray-900 mx-4 my-4">Bienvennido de Vuelta, {user.firstName}!</h1>
       
       {/* Admin and Manager Stats */}
       {(user.role === 'admin' || user.role === 'manager') && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-4">
         <StatCard
-          title="Total Clients"
+          title="Total de Clientes"
           value={stats.totalClients || 0}
           icon={<Users className="h-8 w-8 text-indigo-600" />}
         />
         <StatCard
-          title="Total Trainers"
+          title="Total de Entrenadores"
           value={stats.totalTrainers || 0}
           icon={<Dumbbell className="h-8 w-8 text-green-600" />}
         />
         <StatCard
-          title="Active Memberships"
+          title="Membresias Activas"
           value={stats.totalMemberships || 0}
           icon={<CreditCard className="h-8 w-8 text-yellow-600" />}
         />
         <StatCard
-          title="Total Revenue"
+          title="Total de Ganancias"
           value={`$${(stats.totalRevenue || 0).toLocaleString()}`}
           icon={<DollarSign className="h-8 w-8 text-red-600" />}
         />
@@ -151,17 +151,17 @@ export function Dashboard() {
       {user.role === 'trainer' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
           <StatCard
-            title="Active Classes"
+            title="Clases Activas"
             value={stats.activeClasses || 0}
             icon={<Dumbbell className="h-10 w-10 text-indigo-600" />}
           />
           <StatCard
-            title="Upcoming Bookings"
+            title="Resrvas"
             value={stats.upcomingBookings || 0}
             icon={<Calendar className="h-10 w-10 text-green-600" />}
           />
           <StatCard
-            title="Completed Sessions"
+            title="Sesiones Completadas"
             value={stats.completedBookings || 0}
             icon={<Trophy className="h-10 w-10 text-yellow-600" />}
           />
@@ -173,18 +173,18 @@ export function Dashboard() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4">
             <StatCard
-              title="Membership Status"
+              title="Estado de la Membresia"
               value={stats.membershipStatus?.name || 'No active membership'}
               icon={<CreditCard className="h-12 w-12 text-indigo-600" />}
               description={`Valid until: ${stats.membershipStatus?.validUntil || 'N/A'}`}
             />
             <StatCard
-              title="Upcoming Classes"
+              title="Classes"
               value={stats.upcomingBookings || 0}
               icon={<Calendar className="h-12 w-12 text-green-500" />}
             />
             <StatCard
-              title="Classes Attended"
+              title="Classes Atendidas"
               value={stats.completedBookings || 0}
               icon={<Activity className="h-12 w-12 text-yellow-500" />}
             />
@@ -197,12 +197,12 @@ export function Dashboard() {
                 <Clock className="h-5 w-5 text-yellow-400" />
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-yellow-800">
-                    Membership Expiring Soon
+                    Membresia Expirara pronto 
                   </h3>
                   <div className="mt-2 text-sm text-yellow-700">
                     <p>
-                      Your membership will expire in {stats.membershipStatus.daysLeft} days. 
-                      Consider renewing to maintain access to all gym facilities and classes.
+                      Tu membresia expirará en {stats.membershipStatus.daysLeft} dias. 
+                      Considere renovarla para mantener el acceso a todas las facilidades y clases del gimnasio.
                     </p>
                   </div>
                 </div>

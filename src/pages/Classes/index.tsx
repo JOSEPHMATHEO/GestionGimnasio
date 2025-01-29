@@ -73,13 +73,31 @@ export function Classes() {
   };
 
   const handleDelete = async (classId: string) => {
-    if (window.confirm('Are you sure you want to delete this class?')) {
-      try {
-        await api.delete(`/classes/${classId}`);
-        await fetchClasses(pagination.currentPage);
-      } catch (error) {
-        console.error('Error deleting class:', error);
-        setError('Failed to delete class. Please try again.');
+    try {
+      const classToDelete = classes.find(c => c.id === classId);
+      if (!classToDelete) {
+        setError('Class not found');
+        return;
+      }
+
+      const confirmMessage = `Are you sure you want to delete the class "${classToDelete.name}"?`;
+      
+      if (window.confirm(confirmMessage)) {
+        setError(null);
+        const response = await api.delete(`/classes/${classId}`);
+        
+        if (response.status === 200) {
+          // Actualizar la lista de clases después de eliminar
+          await fetchClasses(pagination.currentPage);
+        }
+      }
+    } catch (error: any) {
+      console.error('Error deleting class:', error);
+      setError(error.response?.data?.message || 'Failed to delete class. Please try again.');
+      
+      // Mostrar mensaje específico si hay reservas asociadas
+      if (error.response?.status === 400) {
+        setError('Cannot delete class because it has associated bookings. Please remove all bookings first.');
       }
     }
   };
@@ -115,7 +133,7 @@ export function Classes() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-4xl font-extrabold text-gray-900 mx-24 my-8">Gestion de Clases</h1>
+        <h1 className="text-4xl font-extrabold text-gray-900 mx-24 my-8">Gestión de Clases</h1>
         <button
           onClick={() => setIsFormOpen(true)}
           className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#333333] hover:bg-zinc-600 mx-24"

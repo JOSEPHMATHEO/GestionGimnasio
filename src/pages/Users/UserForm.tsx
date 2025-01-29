@@ -108,7 +108,7 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
       <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-900">
-            {user ? 'Edit User' : 'Add User'}
+            {user ? 'Editar Usuario' : 'Añadir Usuario'}
           </h3>
           <button
             onClick={onClose}
@@ -208,14 +208,14 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
           {roleValue === 'client' && (
             <div>
               <label htmlFor="membershipId" className="block text-sm font-medium text-gray-700">
-                Planes de Membresia
+                Planes de Membresía
               </label>
               <select
                 id="membershipId"
                 {...register('membershipId')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               >
-                <option value="">Selecciones una membresia</option>
+                <option value="">Seleccione una membresía</option>
                 {memberships.map((membership) => (
                   <option key={membership._id} value={membership._id}>
                     {membership.name} - ${membership.cost}/mes
@@ -234,7 +234,7 @@ export function UserForm({ user, onSubmit, onClose }: UserFormProps) {
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
-              Cancel
+              Cancelar
             </button>
             <button
               type="submit"

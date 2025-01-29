@@ -26,10 +26,10 @@ export function DashboardLayout() {
 
   const menuItems = [
     { label: 'Dashboard', icon: LayoutDashboard, path: '/dashboard', roles: ['admin', 'manager', 'trainer', 'client'] },
-    { label: 'Users', icon: Users, path: '/users', roles: ['admin', 'manager'] },
-    { label: 'Memberships', icon: CreditCard, path: '/memberships', roles: ['admin', 'manager'] },
-    { label: 'Classes', icon: Dumbbell, path: '/classes', roles: ['admin', 'manager', 'trainer'] },
-    { label: 'Bookings', icon: Calendar, path: '/bookings', roles: ['admin', 'manager', 'trainer', 'client'] },
+    { label: 'Usuarios', icon: Users, path: '/users', roles: ['admin', 'manager'] },
+    { label: 'Membresías', icon: CreditCard, path: '/memberships', roles: ['admin', 'manager'] },
+    { label: 'Clases', icon: Dumbbell, path: '/classes', roles: ['admin', 'manager', 'trainer'] },
+    { label: 'Reservas', icon: Calendar, path: '/bookings', roles: ['admin', 'manager', 'trainer', 'client'] },
   ];
 
   const getCurrentPageTitle = () => {

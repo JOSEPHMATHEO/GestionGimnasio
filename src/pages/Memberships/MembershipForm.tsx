@@ -69,7 +69,7 @@ export function MembershipForm({ membership, onSubmit, onClose }: MembershipForm
         <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Nombre de la Membresia
+              Nombre de la Membresía
             </label>
             <input
               id="name"
